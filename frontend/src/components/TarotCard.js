@@ -59,18 +59,28 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
             }}
           >
             {card && (
-              <div className="w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
-                <div className="font-heading text-base sm:text-lg lg:text-xl text-center text-ink-black mb-2">
-                  {card.name}
-                </div>
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="text-4xl sm:text-5xl lg:text-6xl">
-                    {card.arcana === 'major' ? '✦' : getSuitSymbol(card.suit)}
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                {card.image_url ? (
+                  <img 
+                    src={card.image_url} 
+                    alt={card.name}
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
+                    <div className="font-heading text-base sm:text-lg lg:text-xl text-center text-ink-black mb-2">
+                      {card.name}
+                    </div>
+                    <div className="flex-1 flex items-center justify-center">
+                      <div className="text-4xl sm:text-5xl lg:text-6xl">
+                        {card.arcana === 'major' ? '✦' : getSuitSymbol(card.suit)}
+                      </div>
+                    </div>
+                    <div className="font-body text-xs sm:text-sm text-center text-ink-faded mt-2 line-clamp-2">
+                      {card.upright_meaning}
+                    </div>
                   </div>
-                </div>
-                <div className="font-body text-xs sm:text-sm text-center text-ink-faded mt-2 line-clamp-2">
-                  {card.upright_meaning}
-                </div>
+                )}
               </div>
             )}
           </div>
