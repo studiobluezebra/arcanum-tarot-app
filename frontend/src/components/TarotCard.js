@@ -59,7 +59,7 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
             }}
           >
             {card && (
-              <div className={`w-full h-full flex flex-col items-center justify-center p-3 sm:p-4 ${reversed ? 'rotate-180' : ''}`}>
+              <div className="w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
                 <div className="font-heading text-base sm:text-lg lg:text-xl text-center text-ink-black mb-2">
                   {card.name}
                 </div>
@@ -68,13 +68,8 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
                     {card.arcana === 'major' ? '✦' : getSuitSymbol(card.suit)}
                   </div>
                 </div>
-                {reversed && (
-                  <div className="font-ui text-xs text-blood-dried uppercase tracking-widest">
-                    Reversed
-                  </div>
-                )}
                 <div className="font-body text-xs sm:text-sm text-center text-ink-faded mt-2 line-clamp-2">
-                  {reversed ? card.reversed_meaning : card.upright_meaning}
+                  {card.upright_meaning}
                 </div>
               </div>
             )}
