@@ -176,7 +176,7 @@ async def draw_cards(request: DrawCardsRequest):
         result.append({
             "card": card_data,
             "position": positions[i] if positions and i < len(positions) else None,
-            "reversed": random.choice([True, False])
+            "reversed": False
         })
     
     return result
@@ -198,10 +198,9 @@ async def get_interpretation(request: InterpretRequest):
         cards_info = []
         for drawn in request.cards:
             card = drawn.card
-            orientation = "Reversed" if drawn.reversed else "Upright"
-            meaning = card.reversed_meaning if drawn.reversed else card.upright_meaning
+            meaning = card.upright_meaning
             position_text = f" (Position: {drawn.position})" if drawn.position else ""
-            cards_info.append(f"{card.name}{position_text} - {orientation}: {meaning}")
+            cards_info.append(f"{card.name}{position_text}: {meaning}")
         
         cards_text = "\n".join(cards_info)
         question_text = f"Question: {request.question}\n\n" if request.question else ""
