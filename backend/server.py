@@ -279,7 +279,10 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
             "interpretation": interpretation
         }
         
-        await db.daily_cards.insert_one(daily_card)
+        # Insert into database (this adds _id field)
+        await db.daily_cards.insert_one(daily_card.copy())
+        
+        # Return the clean object without MongoDB ObjectId
         return daily_card
     
     except Exception as e:
