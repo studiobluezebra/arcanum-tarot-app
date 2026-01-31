@@ -86,47 +86,19 @@ const Home = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto"
+          className="text-center"
         >
-          <div className="bg-parchment-surface/30 backdrop-blur-sm border border-gold-antique/30 p-6 rounded-sm hover:shadow-xl transition-shadow duration-300">
-            <h3 className="font-subheading text-xl text-ink-black mb-3 tracking-wide">Single Card Draw</h3>
-            <p className="font-body text-sm text-ink-faded mb-4 leading-relaxed">
-              Ask a focused question and receive direct guidance from a single card.
+          <div className="bg-parchment-surface/30 backdrop-blur-sm border border-gold-antique/30 p-8 rounded-sm hover:shadow-xl transition-shadow duration-300 max-w-2xl mx-auto">
+            <h3 className="font-subheading text-2xl text-ink-black mb-3 tracking-wide">Three Card Reading</h3>
+            <p className="font-body text-base text-ink-faded mb-6 leading-relaxed">
+              Explore past, present, and future to understand your journey. Ask your question and receive guidance.
             </p>
             <button
-              onClick={() => navigate('/draw?type=single')}
-              data-testid="single-card-btn"
-              className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-6 py-2 border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-md w-full"
+              onClick={() => navigate('/draw')}
+              data-testid="start-reading-btn"
+              className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-10 py-4 text-lg border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-lg w-full"
             >
-              Draw One
-            </button>
-          </div>
-
-          <div className="bg-parchment-surface/30 backdrop-blur-sm border border-gold-antique/30 p-6 rounded-sm hover:shadow-xl transition-shadow duration-300">
-            <h3 className="font-subheading text-xl text-ink-black mb-3 tracking-wide">Three Card Spread</h3>
-            <p className="font-body text-sm text-ink-faded mb-4 leading-relaxed">
-              Explore past, present, and future to understand your journey.
-            </p>
-            <button
-              onClick={() => navigate('/draw?type=three-card')}
-              data-testid="three-card-btn"
-              className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-6 py-2 border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-md w-full"
-            >
-              Draw Three
-            </button>
-          </div>
-
-          <div className="bg-parchment-surface/30 backdrop-blur-sm border border-gold-antique/30 p-6 rounded-sm hover:shadow-xl transition-shadow duration-300">
-            <h3 className="font-subheading text-xl text-ink-black mb-3 tracking-wide">Celtic Cross</h3>
-            <p className="font-body text-sm text-ink-faded mb-4 leading-relaxed">
-              Deep dive into complex situations with this comprehensive 10-card spread.
-            </p>
-            <button
-              onClick={() => navigate('/draw?type=celtic-cross')}
-              data-testid="celtic-cross-btn"
-              className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-6 py-2 border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-md w-full"
-            >
-              Draw Ten
+              Begin Your Reading
             </button>
           </div>
         </motion.div>
