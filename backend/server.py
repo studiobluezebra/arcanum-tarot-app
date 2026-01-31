@@ -114,6 +114,7 @@ class Card(BaseModel):
     arcana: str
     suit: Optional[str]
     number: int
+    image_url: Optional[str] = None
     keywords: List[str]
     upright_meaning: str
     reversed_meaning: str
