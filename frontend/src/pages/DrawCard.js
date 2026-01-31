@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import TarotCard from '../components/TarotCard';
@@ -9,21 +9,11 @@ const API = `${BACKEND_URL}/api`;
 
 const DrawCard = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [spreadType, setSpreadType] = useState(searchParams.get('type') || 'single');
   const [question, setQuestion] = useState('');
   const [drawnCards, setDrawnCards] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isInterpreting, setIsInterpreting] = useState(false);
   const [revealed, setRevealed] = useState(false);
-
-  const spreadConfig = {
-    single: { count: 1, name: 'Single Card', spread: null },
-    'three-card': { count: 3, name: 'Three Card Spread', spread: 'three-card' },
-    'celtic-cross': { count: 10, name: 'Celtic Cross', spread: 'celtic-cross' },
-  };
-
-  const config = spreadConfig[spreadType];
 
   const handleDraw = async () => {
     if (!question.trim()) {
@@ -34,8 +24,8 @@ const DrawCard = () => {
     setIsDrawing(true);
     try {
       const response = await axios.post(`${API}/draw`, {
-        count: config.count,
-        spread_type: config.spread,
+        count: 3,
+        spread_type: 'three-card',
       });
       setDrawnCards(response.data);
       setRevealed(false);
@@ -57,13 +47,13 @@ const DrawCard = () => {
       const response = await axios.post(`${API}/interpret`, {
         cards: drawnCards,
         question: question,
-        spread_type: config.spread,
+        spread_type: 'three-card',
       });
 
       const reading = {
         cards: drawnCards,
         question: question,
-        spread_type: config.spread,
+        spread_type: 'three-card',
         interpretation: response.data.interpretation,
       };
 
@@ -87,9 +77,9 @@ const DrawCard = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h1 className="font-heading text-4xl sm:text-5xl text-ink-black mb-4">{config.name}</h1>
+          <h1 className="font-heading text-4xl sm:text-5xl text-ink-black mb-4">Three Card Reading</h1>
           <p className="font-body text-base sm:text-lg text-ink-faded max-w-2xl mx-auto">
-            Focus on your question. Clear your mind. When you're ready, draw your cards.
+            Past, Present, and Future. Focus on your question, clear your mind, and let the cards guide you.
           </p>
         </motion.div>
 
@@ -99,34 +89,15 @@ const DrawCard = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-3xl mx-auto mb-12"
         >
-          <div className="mb-4">
-            <label className="font-subheading text-lg text-ink-black mb-2 block">Choose Your Spread</label>
-            <select
-              value={spreadType}
-              onChange={(e) => {
-                setSpreadType(e.target.value);
-                setDrawnCards([]);
-                setRevealed(false);
-              }}
-              data-testid="spread-selector"
-              className="w-full px-4 py-3 bg-parchment-surface border-2 border-gold-antique/50 rounded-sm font-body text-ink-black focus:outline-none focus:border-gold-base transition-colors"
-              disabled={drawnCards.length > 0}
-            >
-              <option value="single">Single Card</option>
-              <option value="three-card">Three Card Spread (Past, Present, Future)</option>
-              <option value="celtic-cross">Celtic Cross (10 Cards)</option>
-            </select>
-          </div>
-
           <div className="ornate-border bg-parchment-surface/50 backdrop-blur-sm p-8 rounded-sm shadow-lg">
             <label className="font-subheading text-lg text-ink-black mb-4 block text-center">
-              Speak Your Question
+              What guidance do you seek?
             </label>
             <input
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="What guidance do you seek?"
+              placeholder="Ask your question..."
               data-testid="question-input"
               className="petition-input w-full"
               disabled={drawnCards.length > 0}
@@ -147,7 +118,7 @@ const DrawCard = () => {
               data-testid="draw-cards-btn"
               className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-12 py-4 text-lg border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isDrawing ? 'Drawing...' : 'Draw Cards'}
+              {isDrawing ? 'Drawing Cards...' : 'Draw Three Cards'}
             </button>
           </motion.div>
         ) : (
@@ -158,9 +129,7 @@ const DrawCard = () => {
             className="space-y-8"
             data-testid="drawn-cards-display"
           >
-            <div className={`flex flex-wrap justify-center gap-6 ${
-              config.count === 10 ? 'max-w-6xl mx-auto' : 'max-w-4xl mx-auto'
-            }`}>
+            <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto">
               {drawnCards.map((drawn, index) => (
                 <motion.div
                   key={index}
@@ -173,7 +142,7 @@ const DrawCard = () => {
                     reversed={drawn.reversed}
                     position={drawn.position}
                     isRevealed={revealed}
-                    size={config.count > 5 ? 'small' : 'medium'}
+                    size="medium"
                   />
                 </motion.div>
               ))}
@@ -208,7 +177,7 @@ const DrawCard = () => {
                 data-testid="draw-again-btn"
                 className="bg-transparent text-ink-faded border border-ink-faded font-ui uppercase tracking-widest px-8 py-3 hover:border-gold-base hover:text-gold-antique transition-all duration-300"
               >
-                Draw Again
+                Ask Another Question
               </button>
             </div>
           </motion.div>
