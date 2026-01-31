@@ -44,15 +44,13 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
           style={{ transformStyle: 'preserve-3d' }}
         >
           <div
-            className="absolute w-full h-full rounded-lg border-4 border-white/10 shadow-2xl bg-cover bg-center"
+            className="absolute w-full h-full rounded-lg border-4 border-gold-base shadow-2xl bg-cover bg-center"
             style={{
               backfaceVisibility: 'hidden',
-              backgroundImage: 'url(https://images.unsplash.com/photo-1739475981422-95aea37df49e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxteXN0aWNhbCUyMHRhcm90JTIwY2FyZCUyMGJhY2slMjBkZXNpZ24lMjBwYXR0ZXJufGVufDB8fHx8MTc2OTgzMzg0MHww&ixlib=rb-4.1.0&q=85)',
+              backgroundImage: 'url(/cards/back.png)',
+              backgroundSize: 'cover',
             }}
           >
-            <div className="w-full h-full bg-gold-antique/80 flex items-center justify-center">
-              <div className="text-gold-shimmer font-heading text-4xl">✦</div>
-            </div>
           </div>
 
           <div
