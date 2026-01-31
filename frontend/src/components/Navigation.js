@@ -7,7 +7,7 @@ const Navigation = () => {
 
   const navItems = [
     { path: '/', label: 'Home', icon: GiCrystalBall },
-    { path: '/draw', label: 'Draw Cards', icon: GiTarotCard },
+    { path: '/draw', label: 'Draw Cards', icon: GiCardRandom },
     { path: '/history', label: 'History', icon: GiScrollUnfurled },
     { path: '/library', label: 'Library', icon: GiSpellBook },
   ];
