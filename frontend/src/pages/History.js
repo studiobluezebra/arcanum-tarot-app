@@ -117,7 +117,7 @@ const History = () => {
                       key={cardIndex}
                       className="font-body text-sm px-3 py-1 bg-gold-base/20 border border-gold-antique/50 rounded-sm"
                     >
-                      {drawn.card.name} {drawn.reversed && '(R)'}
+                      {drawn.card.name}
                     </div>
                   ))}
                 </div>
