@@ -4,6 +4,10 @@ import { motion } from 'framer-motion';
 const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = false, size = 'medium' }) => {
   const [isFlipped, setIsFlipped] = useState(isRevealed);
 
+  React.useEffect(() => {
+    setIsFlipped(isRevealed);
+  }, [isRevealed]);
+
   const sizeClasses = {
     small: 'w-24 h-36',
     medium: 'w-40 h-60',
