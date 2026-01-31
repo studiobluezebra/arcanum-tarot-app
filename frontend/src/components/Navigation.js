@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router';
 import { GiCrystalBall, GiTarotCard, GiSpellBook, GiScrollUnfurled } from 'react-icons/gi';
 
 const Navigation = () => {
