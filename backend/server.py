@@ -250,7 +250,6 @@ async def get_daily_card():
         return existing
     
     card = random.choice(TAROT_CARDS)
-    reversed = random.choice([True, False])
     
     try:
         llm_key = os.environ.get('EMERGENT_LLM_KEY')
@@ -261,10 +260,9 @@ async def get_daily_card():
         )
         chat.with_model("openai", "gpt-5.2")
         
-        orientation = "Reversed" if reversed else "Upright"
-        meaning = card["reversed_meaning"] if reversed else card["upright_meaning"]
+        meaning = card["upright_meaning"]
         
-        prompt = f"""Daily Card: {card['name']} - {orientation}
+        prompt = f"""Daily Card: {card['name']}
 Meaning: {meaning}
 
 Provide a brief, inspiring daily message (2-3 sentences) about how this card's energy can guide today."""
@@ -274,7 +272,7 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         
         daily_card = {
             "date": today,
-            "card": {**card, "reversed": reversed},
+            "card": {**card, "reversed": False},
             "interpretation": interpretation
         }
         
@@ -288,7 +286,7 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         logging.error(f"Error generating daily card: {str(e)}")
         return {
             "date": today,
-            "card": {**card, "reversed": reversed},
+            "card": {**card, "reversed": False},
             "interpretation": f"Today's card is {card['name']}. {meaning}"
         }
 
