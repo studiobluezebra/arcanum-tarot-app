@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { Routes, Route } from 'react-router';
+import { BrowserRouter, Routes, Route } from 'react-router';
 import Home from './pages/Home';
 import DrawCard from './pages/DrawCard';
 import ReadingResult from './pages/ReadingResult';
