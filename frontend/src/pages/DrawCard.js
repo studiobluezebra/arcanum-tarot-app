@@ -136,7 +136,14 @@ const DrawCard = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="flex flex-col items-center"
                 >
+                  {/* Card Name Title - shown when revealed */}
+                  {revealed && (
+                    <h3 className="font-heading text-xl sm:text-2xl text-[#D4AF37] mb-4 text-center">
+                      {drawn.card.name}
+                    </h3>
+                  )}
                   <TarotCard
                     card={drawn.card}
                     reversed={drawn.reversed}
