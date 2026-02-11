@@ -274,7 +274,7 @@ async def get_interpretation(request: InterpretRequest):
         chat = LlmChat(
             api_key=llm_key,
             session_id=str(uuid.uuid4()),
-            system_message="You are a knowledgeable tarot reader who provides clear, psychologically grounded interpretations. Balance traditional tarot meanings with practical psychological insights. Be empathetic, insightful, and help the querent reflect on their situation."
+            system_message="You are a wise tarot reader who provides clear, insightful interpretations. Write in plain text without any markdown formatting (no #, *, _, or other symbols). Be empathetic and help the querent reflect on their situation."
         )
         chat.with_model("openai", "gpt-5.2")
         
@@ -287,18 +287,21 @@ async def get_interpretation(request: InterpretRequest):
         
         cards_text = "\n".join(cards_info)
         question_text = f"Question: {request.question}\n\n" if request.question else ""
-        spread_text = f"Spread Type: {request.spread_type}\n\n" if request.spread_type else ""
         
-        prompt = f"""{spread_text}{question_text}Cards drawn:
+        prompt = f"""{question_text}Cards drawn:
 {cards_text}
 
-Provide a comprehensive, psychologically grounded interpretation of this reading. Focus on:
-1. The overall message and theme
-2. How the cards relate to each other
-3. Practical insights and reflection questions
-4. Balanced perspective (neither overly positive nor negative)
+Provide an interpretation in this exact format (plain text only, no markdown):
 
-Keep the interpretation clear, insightful, and helpful for both beginners and experienced tarot users."""
+Past: [Interpretation for the Past card - 2-3 sentences about what this reveals about the past situation]
+
+Present: [Interpretation for the Present card - 2-3 sentences about the current situation]
+
+Future: [Interpretation for the Future card - 2-3 sentences about what lies ahead]
+
+Synthesis: [A cohesive summary that ties all three cards together, addressing the querent's question with practical insight - 3-4 sentences]
+
+Keep it clear, warm, and insightful. No bullet points, no headers with symbols, just flowing prose."""
         
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
