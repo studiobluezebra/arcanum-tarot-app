@@ -43,47 +43,60 @@ const ReadingResult = () => {
     let currentSection = '';
     let currentContent = '';
     let inSynthesis = false;
+    let remainingText = [];
     
     for (const line of lines) {
       const lowerLine = line.toLowerCase().trim();
       
-      if (lowerLine.startsWith('past') && (lowerLine.includes(':') || lowerLine.includes('-'))) {
+      if (lowerLine.startsWith('past') && (lowerLine.includes(':') || lowerLine.includes('-') || lowerLine.includes('('))) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
         currentSection = 'Past';
-        currentContent = line.replace(/^past[:\-\s]*/i, '').trim();
+        currentContent = line.replace(/^past[:\-\s\(]*/i, '').replace(/\)?\s*$/, '').trim();
         inSynthesis = false;
-      } else if (lowerLine.startsWith('present') && (lowerLine.includes(':') || lowerLine.includes('-'))) {
+      } else if (lowerLine.startsWith('present') && (lowerLine.includes(':') || lowerLine.includes('-') || lowerLine.includes('('))) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
         currentSection = 'Present';
-        currentContent = line.replace(/^present[:\-\s]*/i, '').trim();
+        currentContent = line.replace(/^present[:\-\s\(]*/i, '').replace(/\)?\s*$/, '').trim();
         inSynthesis = false;
-      } else if (lowerLine.startsWith('future') && (lowerLine.includes(':') || lowerLine.includes('-'))) {
+      } else if (lowerLine.startsWith('future') && (lowerLine.includes(':') || lowerLine.includes('-') || lowerLine.includes('('))) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
         currentSection = 'Future';
-        currentContent = line.replace(/^future[:\-\s]*/i, '').trim();
+        currentContent = line.replace(/^future[:\-\s\(]*/i, '').replace(/\)?\s*$/, '').trim();
         inSynthesis = false;
-      } else if (lowerLine.includes('synthesis') || lowerLine.includes('overall') || lowerLine.includes('summary') || lowerLine.includes('together') || lowerLine.includes('conclusion')) {
+      } else if (lowerLine.includes('synthesis') || lowerLine.includes('overall') || lowerLine.includes('summary') || lowerLine.includes('together') || lowerLine.includes('conclusion') || lowerLine.includes('guidance')) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
         currentSection = '';
         currentContent = '';
         inSynthesis = true;
+        // Check if there's content after the label on the same line
+        const afterLabel = line.replace(/^.*(synthesis|overall|summary|together|conclusion|guidance)[:\-\s]*/i, '').trim();
+        if (afterLabel) {
+          synthesis += afterLabel + ' ';
+        }
       } else if (inSynthesis) {
         synthesis += line.trim() + ' ';
       } else if (currentSection) {
         currentContent += ' ' + line.trim();
+      } else {
+        remainingText.push(line.trim());
       }
     }
     
     if (currentSection && currentContent) {
       cardReadings.push({ position: currentSection, content: currentContent.trim() });
+    }
+    
+    // If we have card readings but no synthesis, use remaining text
+    if (cardReadings.length > 0 && !synthesis.trim() && remainingText.length > 0) {
+      synthesis = remainingText.join(' ');
     }
     
     // If no structured parsing worked, use full text as synthesis
