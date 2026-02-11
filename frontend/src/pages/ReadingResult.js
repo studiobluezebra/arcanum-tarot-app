@@ -1,19 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
-import TarotCard from '../components/TarotCard';
-
-const positionColors = {
-  Past: 'border-position-past text-position-past',
-  Present: 'border-position-present text-position-present',
-  Future: 'border-position-future text-position-future'
-};
-
-const positionBgColors = {
-  Past: 'bg-position-past/10 border-position-past/30',
-  Present: 'bg-position-present/10 border-position-present/30',
-  Future: 'bg-position-future/10 border-position-future/30'
-};
 
 const ReadingResult = () => {
   const location = useLocation();
@@ -22,14 +9,14 @@ const ReadingResult = () => {
 
   if (!reading) {
     return (
-      <div className="min-h-screen py-20 bg-celestial-dark" data-testid="no-reading-error">
+      <div className="min-h-screen py-20 bg-[#141414]" data-testid="no-reading-error">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="font-heading text-4xl text-gold-base mb-4">No Reading Found</h1>
-          <p className="font-body text-celestial-muted mb-8">Please draw cards first to get a reading.</p>
+          <h1 className="font-heading text-4xl text-[#D4AF37] mb-4">No Reading Found</h1>
+          <p className="font-body text-[#8B8B8B] mb-8">Please draw cards first to get a reading.</p>
           <button
             onClick={() => navigate('/draw')}
             data-testid="go-to-draw-btn"
-            className="bg-gold-base text-celestial-dark font-ui uppercase tracking-widest px-8 py-3 hover:bg-gold-shimmer transition-all duration-300"
+            className="bg-[#D4AF37] text-[#141414] font-ui uppercase tracking-widest px-8 py-3 hover:bg-[#E8C872] transition-all duration-300"
           >
             Draw Cards
           </button>
@@ -38,55 +25,70 @@ const ReadingResult = () => {
     );
   }
 
-  // Parse interpretation to separate card readings from synthesis
+  // Parse interpretation - remove markdown and split by position
   const parseInterpretation = (text) => {
     if (!text) return { cardReadings: [], synthesis: '' };
     
-    const lines = text.split('\n');
+    // Clean markdown symbols
+    let cleanText = text
+      .replace(/#{1,6}\s*/g, '')  // Remove # headers
+      .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1')  // Remove **bold** and *italic*
+      .replace(/_{1,2}([^_]+)_{1,2}/g, '$1')  // Remove __underline__
+      .replace(/`([^`]+)`/g, '$1')  // Remove `code`
+      .trim();
+    
+    const lines = cleanText.split('\n').filter(line => line.trim());
     let cardReadings = [];
     let synthesis = '';
     let currentSection = '';
     let currentContent = '';
+    let inSynthesis = false;
     
     for (const line of lines) {
-      if (line.toLowerCase().includes('past:') || line.toLowerCase().includes('past -')) {
+      const lowerLine = line.toLowerCase().trim();
+      
+      if (lowerLine.startsWith('past') && (lowerLine.includes(':') || lowerLine.includes('-'))) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
         currentSection = 'Past';
-        currentContent = line.replace(/past[:\-]/i, '').trim();
-      } else if (line.toLowerCase().includes('present:') || line.toLowerCase().includes('present -')) {
+        currentContent = line.replace(/^past[:\-\s]*/i, '').trim();
+        inSynthesis = false;
+      } else if (lowerLine.startsWith('present') && (lowerLine.includes(':') || lowerLine.includes('-'))) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
         currentSection = 'Present';
-        currentContent = line.replace(/present[:\-]/i, '').trim();
-      } else if (line.toLowerCase().includes('future:') || line.toLowerCase().includes('future -')) {
+        currentContent = line.replace(/^present[:\-\s]*/i, '').trim();
+        inSynthesis = false;
+      } else if (lowerLine.startsWith('future') && (lowerLine.includes(':') || lowerLine.includes('-'))) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
         currentSection = 'Future';
-        currentContent = line.replace(/future[:\-]/i, '').trim();
-      } else if (line.toLowerCase().includes('synthesis') || line.toLowerCase().includes('overall') || line.toLowerCase().includes('summary') || line.toLowerCase().includes('together')) {
+        currentContent = line.replace(/^future[:\-\s]*/i, '').trim();
+        inSynthesis = false;
+      } else if (lowerLine.includes('synthesis') || lowerLine.includes('overall') || lowerLine.includes('summary') || lowerLine.includes('together') || lowerLine.includes('conclusion')) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
-        currentSection = 'synthesis';
+        currentSection = '';
         currentContent = '';
-      } else if (currentSection === 'synthesis') {
-        synthesis += line + '\n';
+        inSynthesis = true;
+      } else if (inSynthesis) {
+        synthesis += line.trim() + ' ';
       } else if (currentSection) {
-        currentContent += ' ' + line;
+        currentContent += ' ' + line.trim();
       }
     }
     
-    if (currentSection && currentSection !== 'synthesis' && currentContent) {
+    if (currentSection && currentContent) {
       cardReadings.push({ position: currentSection, content: currentContent.trim() });
     }
     
     // If no structured parsing worked, use full text as synthesis
     if (cardReadings.length === 0) {
-      synthesis = text;
+      synthesis = cleanText;
     }
     
     return { cardReadings, synthesis: synthesis.trim() };
@@ -94,114 +96,105 @@ const ReadingResult = () => {
 
   const { cardReadings, synthesis } = parseInterpretation(reading.interpretation);
 
-  return (
-    <div className="min-h-screen py-12 sm:py-20 bg-celestial-dark" data-testid="reading-result-page">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-12"
-        >
-          <h1 className="font-heading text-4xl sm:text-5xl text-gold-base mb-4">Your Reading</h1>
-          {reading.question && (
-            <div className="max-w-3xl mx-auto">
-              <p className="font-subheading text-xl sm:text-2xl text-celestial-text italic" data-testid="reading-question">
-                "{reading.question}"
-              </p>
-            </div>
-          )}
-        </motion.div>
+  // Get card for each position
+  const getCardForPosition = (position) => {
+    const drawn = reading.cards.find(c => c.position === position);
+    return drawn?.card;
+  };
 
-        {/* Cards with individual interpretations */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mb-16"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {reading.cards.map((drawn, index) => {
-              const cardReading = cardReadings.find(r => r.position === drawn.position);
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.15 }}
-                  className={`flex flex-col items-center p-6 rounded-lg border ${positionBgColors[drawn.position] || 'bg-celestial-card/50 border-celestial-border'}`}
-                >
-                  {/* Position label */}
-                  <div className={`font-subheading text-lg tracking-widest uppercase mb-4 ${positionColors[drawn.position] || 'text-celestial-text'}`}>
-                    {drawn.position}
-                  </div>
-                  
-                  {/* Card */}
-                  <TarotCard
-                    card={drawn.card}
-                    reversed={drawn.reversed}
-                    isRevealed={true}
-                    size="medium"
-                  />
-                  
-                  {/* Card name */}
-                  <h3 className="font-subheading text-xl text-celestial-text mt-4 mb-2 text-center">
-                    {drawn.card.name}
-                  </h3>
-                  
-                  {/* Individual interpretation */}
-                  {cardReading && (
-                    <p className="font-body text-sm text-celestial-muted text-center leading-relaxed mt-2">
-                      {cardReading.content}
-                    </p>
-                  )}
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
+  return (
+    <div className="min-h-screen py-12 sm:py-20 bg-[#141414]" data-testid="reading-result-page">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Question */}
+        {reading.question && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
+          >
+            <p className="font-body text-lg text-[#8B8B8B] italic" data-testid="reading-question">
+              "{reading.question}"
+            </p>
+          </motion.div>
+        )}
+
+        {/* Card Readings - Vertical Layout */}
+        <div className="space-y-16 mb-20">
+          {['Past', 'Present', 'Future'].map((position, index) => {
+            const card = getCardForPosition(position);
+            const cardReading = cardReadings.find(r => r.position === position);
+            
+            if (!card) return null;
+            
+            return (
+              <motion.div
+                key={position}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                className="border-l-2 border-[#3D3D3D] pl-8"
+              >
+                {/* Position Label */}
+                <div className="font-ui text-xs tracking-[0.3em] uppercase text-[#8B8B8B] mb-4">
+                  {position}
+                </div>
+                
+                {/* Card Name - Big */}
+                <h2 className="font-heading text-3xl sm:text-4xl text-[#D4AF37] mb-6">
+                  {card.name}
+                </h2>
+                
+                {/* Interpretation */}
+                <p className="font-body text-base sm:text-lg text-[#E8DCC8] leading-relaxed italic">
+                  {cardReading ? `"${cardReading.content}"` : `"${card.upright_meaning}"`}
+                </p>
+              </motion.div>
+            );
+          })}
+        </div>
 
         {/* Oracle's Synthesis */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="bg-celestial-card border border-gold-base/30 p-8 sm:p-12 rounded-lg shadow-2xl max-w-4xl mx-auto mb-12"
-        >
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-gold-base/50"></div>
-            <h2 className="font-heading text-xl sm:text-2xl text-gold-base tracking-widest uppercase">
-              The Oracle's Synthesis
-            </h2>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-gold-base/50"></div>
-          </div>
-          <div
-            className="font-body text-base sm:text-lg text-celestial-text leading-relaxed whitespace-pre-wrap text-center"
-            data-testid="reading-interpretation"
+        {synthesis && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="border-t border-[#3D3D3D] pt-12 mb-16"
           >
-            {synthesis || reading.interpretation}
-          </div>
-        </motion.div>
+            <div className="text-center mb-8">
+              <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
+                The Oracle's Synthesis
+              </h2>
+            </div>
+            <p
+              className="font-body text-base sm:text-lg text-[#E8DCC8] leading-relaxed text-center max-w-3xl mx-auto"
+              data-testid="reading-interpretation"
+            >
+              {synthesis}
+            </p>
+          </motion.div>
+        )}
 
         {/* Action buttons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.7 }}
-          className="flex justify-center gap-4 flex-wrap"
+          transition={{ duration: 0.8, delay: 1 }}
+          className="flex justify-center gap-4 flex-wrap pt-8"
         >
           <button
             onClick={() => navigate('/draw')}
             data-testid="new-reading-btn"
-            className="bg-gold-base text-celestial-dark font-ui uppercase tracking-widest px-8 py-3 hover:bg-gold-shimmer transition-all duration-300"
+            className="bg-[#D4AF37] text-[#141414] font-ui uppercase tracking-widest px-8 py-3 hover:bg-[#E8C872] transition-all duration-300"
           >
             New Reading
           </button>
           <button
             onClick={() => navigate('/history')}
             data-testid="view-history-btn"
-            className="bg-transparent text-celestial-muted border border-celestial-border font-ui uppercase tracking-widest px-8 py-3 hover:border-gold-base hover:text-gold-base transition-all duration-300"
+            className="bg-transparent text-[#8B8B8B] border border-[#3D3D3D] font-ui uppercase tracking-widest px-8 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300"
           >
             View History
           </button>
