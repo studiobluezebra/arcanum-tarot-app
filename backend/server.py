@@ -201,16 +201,45 @@ class DailyCard(BaseModel):
     card: dict
     interpretation: str
 
-@api_router.get("/cards", response_model=List[Card])
-async def get_all_cards():
-    return TAROT_CARDS
+class DeckTheme(BaseModel):
+    id: str
+    name: str
+    description: str
+    available: bool
+    card_count: int
 
-@api_router.get("/cards/{card_id}", response_model=Card)
-async def get_card(card_id: str):
+@api_router.get("/decks")
+async def get_decks():
+    """Get all available deck themes"""
+    decks = []
+    for deck_id, info in DECK_THEMES.items():
+        decks.append({
+            "id": deck_id,
+            "name": info["name"],
+            "description": info["description"],
+            "available": info["available"],
+            "card_count": len(DECK_CARDS.get(deck_id, []))
+        })
+    return decks
+
+@api_router.get("/cards")
+async def get_all_cards(deck: str = "original"):
+    """Get all cards with image URLs for a specific deck"""
+    cards = []
+    for card in TAROT_CARDS:
+        card_with_image = {**card}
+        card_with_image["image_url"] = get_card_image_url(card["id"], deck)
+        cards.append(card_with_image)
+    return cards
+
+@api_router.get("/cards/{card_id}")
+async def get_card(card_id: str, deck: str = "original"):
     card = next((c for c in TAROT_CARDS if c["id"] == card_id), None)
     if not card:
         raise HTTPException(status_code=404, detail="Card not found")
-    return card
+    card_with_image = {**card}
+    card_with_image["image_url"] = get_card_image_url(card_id, deck)
+    return card_with_image
 
 @api_router.post("/draw", response_model=List[DrawnCard])
 async def draw_cards(request: DrawCardsRequest):
