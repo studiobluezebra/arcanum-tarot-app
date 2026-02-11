@@ -119,7 +119,7 @@ const DrawCard = () => {
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="text-[#D4AF37]">✦</span>
-                  <span>Example: Instead of "Will I get the job?" ask "What do I need to know about my career path?"</span>
+                  <span>Example: "What is the overall dynamic of my relationship with..." or "What energies surround my career path right now?"</span>
                 </p>
               </div>
             </div>
