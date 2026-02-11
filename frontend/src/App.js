@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router';
+import { DeckProvider } from './context/DeckContext';
 import Home from './pages/Home';
 import DrawCard from './pages/DrawCard';
 import ReadingResult from './pages/ReadingResult';
@@ -11,16 +12,18 @@ import './App.css';
 function App() {
   return (
     <div className="App bg-texture min-h-screen">
-      <BrowserRouter>
-        <Navigation />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/draw" element={<DrawCard />} />
-          <Route path="/reading" element={<ReadingResult />} />
-          <Route path="/history" element={<History />} />
-          <Route path="/library" element={<CardLibrary />} />
-        </Routes>
-      </BrowserRouter>
+      <DeckProvider>
+        <BrowserRouter>
+          <Navigation />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/draw" element={<DrawCard />} />
+            <Route path="/reading" element={<ReadingResult />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/library" element={<CardLibrary />} />
+          </Routes>
+        </BrowserRouter>
+      </DeckProvider>
     </div>
   );
 }
