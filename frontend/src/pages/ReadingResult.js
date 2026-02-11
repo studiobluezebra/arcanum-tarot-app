@@ -12,7 +12,7 @@ const ReadingResult = () => {
       <div className="min-h-screen py-20 bg-[#141414]" data-testid="no-reading-error">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="font-heading text-4xl text-[#D4AF37] mb-4">No Reading Found</h1>
-          <p className="font-body text-[#8B8B8B] mb-8">Please draw cards first to get a reading.</p>
+          <p className="font-reading text-[#8B8B8B] mb-8">Please draw cards first to get a reading.</p>
           <button
             onClick={() => navigate('/draw')}
             data-testid="go-to-draw-btn"
@@ -31,10 +31,10 @@ const ReadingResult = () => {
     
     // Clean markdown symbols
     let cleanText = text
-      .replace(/#{1,6}\s*/g, '')  // Remove # headers
-      .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1')  // Remove **bold** and *italic*
-      .replace(/_{1,2}([^_]+)_{1,2}/g, '$1')  // Remove __underline__
-      .replace(/`([^`]+)`/g, '$1')  // Remove `code`
+      .replace(/#{1,6}\s*/g, '')
+      .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1')
+      .replace(/_{1,2}([^_]+)_{1,2}/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
       .trim();
     
     const lines = cleanText.split('\n').filter(line => line.trim());
@@ -114,7 +114,7 @@ const ReadingResult = () => {
             transition={{ duration: 0.8 }}
             className="text-center mb-16"
           >
-            <p className="font-body text-lg text-[#8B8B8B] italic" data-testid="reading-question">
+            <p className="font-reading text-lg text-[#8B8B8B] italic" data-testid="reading-question">
               "{reading.question}"
             </p>
           </motion.div>
@@ -141,21 +141,21 @@ const ReadingResult = () => {
                   {position}
                 </div>
                 
-                {/* Card Name - Big */}
+                {/* Card Name - Big, decorative font */}
                 <h2 className="font-heading text-3xl sm:text-4xl text-[#D4AF37] mb-6">
                   {card.name}
                 </h2>
                 
-                {/* Interpretation */}
-                <p className="font-body text-base sm:text-lg text-[#E8DCC8] leading-relaxed italic">
-                  {cardReading ? `"${cardReading.content}"` : `"${card.upright_meaning}"`}
+                {/* Interpretation - Roboto font */}
+                <p className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed">
+                  {cardReading ? cardReading.content : card.upright_meaning}
                 </p>
               </motion.div>
             );
           })}
         </div>
 
-        {/* Oracle's Synthesis */}
+        {/* Oracle's Synthesis - After all three cards */}
         {synthesis && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -169,7 +169,7 @@ const ReadingResult = () => {
               </h2>
             </div>
             <p
-              className="font-body text-base sm:text-lg text-[#E8DCC8] leading-relaxed text-center max-w-3xl mx-auto"
+              className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed text-center max-w-3xl mx-auto"
               data-testid="reading-interpretation"
             >
               {synthesis}
