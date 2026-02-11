@@ -13,7 +13,7 @@
   },
   "typography": {
     "headings": {
-      "font_family": "Cinzel Decorative, serif",
+      "font_family": "Poppins, serif",
       "weights": ["700", "900"],
       "usage": "Page titles, Card names, Major arcana highlights",
       "fallback": "serif"
