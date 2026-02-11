@@ -150,6 +150,16 @@ DECK_CARDS = {
     "ethereal": []
 }
 
+def get_card_image_url(card_id: str, deck: str = "original") -> Optional[str]:
+    """Get the image URL for a card in a specific deck"""
+    if card_id in DECK_CARDS.get(deck, []):
+        return f"/cards/{deck}/{card_id}.png"
+    return None
+
+def get_back_image_url(deck: str = "original") -> str:
+    """Get the card back image URL for a specific deck"""
+    return f"/cards/{deck}/back.png"
+
 class Card(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
