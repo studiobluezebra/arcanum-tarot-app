@@ -291,17 +291,17 @@ async def get_interpretation(request: InterpretRequest):
         prompt = f"""{question_text}Cards drawn:
 {cards_text}
 
-Provide an interpretation in this exact format (plain text only, no markdown):
+Provide an interpretation following this exact structure. Use plain text only (no markdown, no #, *, or special symbols):
 
-Past: [Interpretation for the Past card - 2-3 sentences about what this reveals about the past situation]
+Past: Write 2-3 sentences about what the Past card reveals about the background or root of this situation.
 
-Present: [Interpretation for the Present card - 2-3 sentences about the current situation]
+Present: Write 2-3 sentences about what the Present card shows about the current circumstances or challenges.
 
-Future: [Interpretation for the Future card - 2-3 sentences about what lies ahead]
+Future: Write 2-3 sentences about what the Future card suggests about the path ahead or potential outcomes.
 
-Synthesis: [A cohesive summary that ties all three cards together, addressing the querent's question with practical insight - 3-4 sentences]
+Synthesis: Write 3-4 sentences that weave all three cards together into unified guidance. Address the querent's question directly and offer practical wisdom they can apply.
 
-Keep it clear, warm, and insightful. No bullet points, no headers with symbols, just flowing prose."""
+Keep your tone warm, clear, and insightful."""
         
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
