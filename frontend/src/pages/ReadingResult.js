@@ -155,7 +155,7 @@ const ReadingResult = () => {
               >
                 {/* Card Image - Left Side */}
                 <div className="flex-shrink-0">
-                  <div className="w-20 h-32 sm:w-24 sm:h-36 rounded-lg overflow-hidden border-2 border-[#3D3D3D]">
+                  <div className="w-32 h-48 sm:w-40 sm:h-60 md:w-48 md:h-72 rounded-lg overflow-hidden border-2 border-[#3D3D3D]">
                     <img 
                       src={cardImageUrl} 
                       alt={card.name}
