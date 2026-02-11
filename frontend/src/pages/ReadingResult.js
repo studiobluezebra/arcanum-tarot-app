@@ -1,11 +1,13 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
+import { useDeck } from '../context/DeckContext';
 
 const ReadingResult = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const reading = location.state?.reading;
+  const { getCardImageUrl } = useDeck();
 
   if (!reading) {
     return (
