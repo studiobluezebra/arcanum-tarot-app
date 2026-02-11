@@ -20,7 +20,7 @@ const DeckSelector = () => {
       transition={{ duration: 0.8, delay: 0.1 }}
       className="mb-10"
     >
-      <h2 className="font-subheading text-lg text-ink-black text-center mb-6">Choose Your Deck</h2>
+      <h2 className="font-subheading text-lg text-celestial-text text-center mb-6">Choose Your Deck</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {decks.map((deck) => (
           <button
@@ -28,28 +28,28 @@ const DeckSelector = () => {
             onClick={() => deck.available && setSelectedDeck(deck.id)}
             disabled={!deck.available}
             data-testid={`deck-selector-${deck.id}`}
-            className={`relative p-4 rounded-sm border-2 transition-all duration-300 ${
+            className={`relative p-4 rounded-lg border transition-all duration-300 ${
               selectedDeck === deck.id
                 ? 'border-gold-base bg-gold-base/20 shadow-lg'
                 : deck.available
-                ? 'border-gold-antique/30 bg-parchment-surface/50 hover:border-gold-antique hover:shadow-md'
-                : 'border-gray-300/30 bg-gray-100/30 opacity-50 cursor-not-allowed'
+                ? 'border-celestial-border bg-celestial-card hover:border-gold-base/50 hover:shadow-md'
+                : 'border-celestial-border/30 bg-celestial-card/30 opacity-50 cursor-not-allowed'
             }`}
           >
             {selectedDeck === deck.id && (
               <div className="absolute -top-2 -right-2 w-6 h-6 bg-gold-base rounded-full flex items-center justify-center">
-                <span className="text-white text-xs">✓</span>
+                <span className="text-celestial-dark text-xs">✓</span>
               </div>
             )}
-            <h3 className="font-subheading text-sm font-bold text-ink-black mb-1">{deck.name}</h3>
-            <p className="font-body text-xs text-ink-faded leading-tight">{deck.description}</p>
+            <h3 className="font-subheading text-sm font-bold text-celestial-text mb-1">{deck.name}</h3>
+            <p className="font-body text-xs text-celestial-muted leading-tight">{deck.description}</p>
             {deck.available && (
-              <span className="inline-block mt-2 font-body text-xs text-gold-antique">
+              <span className="inline-block mt-2 font-body text-xs text-gold-base">
                 {deck.card_count} cards
               </span>
             )}
             {!deck.available && (
-              <span className="inline-block mt-2 font-body text-xs text-ink-faded italic">
+              <span className="inline-block mt-2 font-body text-xs text-celestial-muted italic">
                 Coming soon
               </span>
             )}
