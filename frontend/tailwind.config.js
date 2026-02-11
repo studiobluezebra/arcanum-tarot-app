@@ -90,6 +90,7 @@ module.exports = {
                         heading: ['Cinzel Decorative', 'serif'],
                         subheading: ['Cormorant Garamond', 'serif'],
                         body: ['Crimson Text', 'serif'],
+                        reading: ['Roboto', 'sans-serif'],
                         ui: ['Lato', 'sans-serif']
                 },
                 keyframes: {
