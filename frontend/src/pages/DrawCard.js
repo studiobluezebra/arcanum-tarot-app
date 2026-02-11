@@ -129,7 +129,7 @@ const DrawCard = () => {
             className="space-y-8"
             data-testid="drawn-cards-display"
           >
-            <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
               {drawnCards.map((drawn, index) => (
                 <motion.div
                   key={index}
@@ -142,7 +142,7 @@ const DrawCard = () => {
                     reversed={drawn.reversed}
                     position={drawn.position}
                     isRevealed={revealed}
-                    size="medium"
+                    size="large"
                   />
                 </motion.div>
               ))}
