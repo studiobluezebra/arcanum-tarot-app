@@ -54,25 +54,36 @@ module.exports = {
                                 '5': 'hsl(var(--chart-5))'
                         },
                         gold: {
-                                base: '#C5A059',
-                                shimmer: '#E5C585',
-                                antique: '#8A6D3B'
+                                base: '#D4AF37',
+                                shimmer: '#F4D03F',
+                                antique: '#B8860B',
+                                light: '#E8C872'
+                        },
+                        celestial: {
+                                dark: '#141414',
+                                card: '#1E1E1E',
+                                border: '#3D3D3D',
+                                text: '#E8DCC8',
+                                muted: '#8B8B8B'
+                        },
+                        position: {
+                                past: '#4CAF7A',
+                                present: '#D4AF37',
+                                future: '#5B9BD5'
                         },
                         blood: {
                                 dried: '#722F37',
                                 fresh: '#9E1B32'
                         },
                         ink: {
-                                black: '#1A1A1A',
-                                faded: '#36454F'
+                                black: '#141414',
+                                faded: '#8B8B8B',
+                                light: '#E8DCC8'
                         },
                         parchment: {
-                                light: '#F0EAD6',
-                                surface: '#E8DEC5',
-                                dark: '#0F0B15',
-                                'dark-surface': '#1A1625',
-                                text: '#E0D6C8',
-                                border: '#5D4C75'
+                                light: '#E8DCC8',
+                                surface: '#1E1E1E',
+                                dark: '#141414'
                         }
                 },
                 fontFamily: {
