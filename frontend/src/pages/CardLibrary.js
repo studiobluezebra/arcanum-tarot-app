@@ -154,7 +154,7 @@ const CardLibrary = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
           >
             {filteredCards.map((card, index) => (
               <motion.div
@@ -162,12 +162,12 @@ const CardLibrary = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.3, delay: index * 0.02 }}
-                className="bg-celestial-card border border-celestial-border p-4 rounded-lg hover:border-gold-base/50 transition-all duration-300"
+                className="bg-celestial-card border border-celestial-border p-2 rounded-lg hover:border-gold-base/50 transition-all duration-300"
                 data-testid={`library-card-${card.id}`}
               >
-                <TarotCard card={card} isRevealed={false} size="small" />
-                <div className="mt-4 text-center">
-                  <h3 className="font-subheading text-lg text-[#D4AF37] mb-3">{card.name}</h3>
+                <TarotCard card={card} isRevealed={false} size="medium" />
+                <div className="mt-3 text-center">
+                  <h3 className="font-subheading text-xl text-[#D4AF37] mb-2">{card.name}</h3>
                   <div className="flex flex-wrap gap-1 justify-center">
                     {card.keywords.slice(0, 3).map((keyword, i) => (
                       <span
