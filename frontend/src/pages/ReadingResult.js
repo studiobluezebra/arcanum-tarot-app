@@ -220,11 +220,55 @@ const ReadingResult = () => {
           </motion.div>
         )}
 
+        {/* Follow-up Questions - Based on the spread */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1 }}
+          className="border-t border-[#3D3D3D] pt-12 mb-16"
+        >
+          <div className="text-center mb-8">
+            <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
+              Go Deeper
+            </h2>
+            <p className="font-reading text-sm text-[#8B8B8B] mt-2">
+              Based on your reading, consider exploring these questions for more guidance
+            </p>
+          </div>
+          <div className="max-w-2xl mx-auto space-y-4">
+            {reading.cards && reading.cards.map((drawn, index) => {
+              const position = drawn.position;
+              const cardName = drawn.card.name;
+              const suggestions = {
+                Past: `What lessons from "${cardName}" should I carry forward?`,
+                Present: `How can I better work with the energy of "${cardName}" right now?`,
+                Future: `What actions can help me align with the potential of "${cardName}"?`
+              };
+              return (
+                <div 
+                  key={index}
+                  className="bg-[#1E1E1E] border border-[#3D3D3D] p-4 rounded-lg hover:border-[#D4AF37]/50 transition-all cursor-pointer"
+                  onClick={() => {
+                    navigate('/draw');
+                  }}
+                >
+                  <p className="font-ui text-xs text-[#8B8B8B] uppercase tracking-widest mb-2">
+                    {position}
+                  </p>
+                  <p className="font-reading text-base text-[#E8DCC8]">
+                    {suggestions[position]}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* Action buttons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
           className="flex justify-center gap-4 flex-wrap pt-8"
         >
           <button
