@@ -106,6 +106,15 @@ const ReadingResult = () => {
       synthesis = cleanText;
     }
     
+    // Clean up synthesis - ensure it starts properly as a sentence
+    synthesis = synthesis.trim();
+    // Remove leading punctuation and whitespace
+    synthesis = synthesis.replace(/^[,;:\-–—\s]+/, '');
+    // Capitalize first letter
+    if (synthesis.length > 0) {
+      synthesis = synthesis.charAt(0).toUpperCase() + synthesis.slice(1);
+    }
+    
     return { cardReadings, synthesis: synthesis.trim() };
   };
 
