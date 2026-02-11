@@ -2,24 +2,78 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import TarotCard from '../components/TarotCard';
+import { useDeck } from '../context/DeckContext';
 import { GiSpellBook } from 'react-icons/gi';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+const DeckSelector = () => {
+  const { decks, selectedDeck, setSelectedDeck, loading } = useDeck();
+
+  if (loading) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, delay: 0.1 }}
+      className="mb-10"
+    >
+      <h2 className="font-subheading text-lg text-ink-black text-center mb-6">Choose Your Deck</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        {decks.map((deck) => (
+          <button
+            key={deck.id}
+            onClick={() => deck.available && setSelectedDeck(deck.id)}
+            disabled={!deck.available}
+            data-testid={`deck-selector-${deck.id}`}
+            className={`relative p-4 rounded-sm border-2 transition-all duration-300 ${
+              selectedDeck === deck.id
+                ? 'border-gold-base bg-gold-base/20 shadow-lg'
+                : deck.available
+                ? 'border-gold-antique/30 bg-parchment-surface/50 hover:border-gold-antique hover:shadow-md'
+                : 'border-gray-300/30 bg-gray-100/30 opacity-50 cursor-not-allowed'
+            }`}
+          >
+            {selectedDeck === deck.id && (
+              <div className="absolute -top-2 -right-2 w-6 h-6 bg-gold-base rounded-full flex items-center justify-center">
+                <span className="text-white text-xs">✓</span>
+              </div>
+            )}
+            <h3 className="font-subheading text-sm font-bold text-ink-black mb-1">{deck.name}</h3>
+            <p className="font-body text-xs text-ink-faded leading-tight">{deck.description}</p>
+            {deck.available && (
+              <span className="inline-block mt-2 font-body text-xs text-gold-antique">
+                {deck.card_count} cards
+              </span>
+            )}
+            {!deck.available && (
+              <span className="inline-block mt-2 font-body text-xs text-ink-faded italic">
+                Coming soon
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
 
 const CardLibrary = () => {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const { selectedDeck } = useDeck();
 
   useEffect(() => {
     fetchCards();
-  }, []);
+  }, [selectedDeck]);
 
   const fetchCards = async () => {
     try {
-      const response = await axios.get(`${API}/cards`);
+      const response = await axios.get(`${API}/cards?deck=${selectedDeck}`);
       setCards(response.data);
     } catch (error) {
       console.error('Error fetching cards:', error);
@@ -57,6 +111,8 @@ const CardLibrary = () => {
             Explore the complete tarot deck. Study each card's meaning and symbolism.
           </p>
         </motion.div>
+
+        <DeckSelector />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
