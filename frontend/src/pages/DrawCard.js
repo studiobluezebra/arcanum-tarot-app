@@ -99,9 +99,30 @@ const DrawCard = () => {
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Ask your question..."
               data-testid="question-input"
-              className="w-full px-6 py-4 bg-celestial-dark border border-celestial-border rounded-lg font-body text-lg text-celestial-text placeholder-celestial-muted focus:outline-none focus:border-gold-base transition-colors"
+              className="w-full px-6 py-4 bg-celestial-dark border border-celestial-border rounded-lg font-body text-lg text-celestial-text placeholder-celestial-muted focus:outline-none focus:border-gold-base transition-colors mb-6"
               disabled={drawnCards.length > 0}
             />
+            
+            {/* Question Guidance */}
+            <div className="border-t border-celestial-border pt-6">
+              <p className="font-reading text-sm text-[#8B8B8B] text-center mb-4">
+                How to ask the right question
+              </p>
+              <div className="font-reading text-sm text-[#E8DCC8] space-y-2">
+                <p className="flex items-start gap-2">
+                  <span className="text-[#D4AF37]">✦</span>
+                  <span>Tarot reveals <strong>dynamics and insights</strong>, not yes/no answers</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="text-[#D4AF37]">✦</span>
+                  <span>Ask about <strong>what to focus on</strong>, <strong>what influences</strong> a situation, or <strong>what you need to understand</strong></span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="text-[#D4AF37]">✦</span>
+                  <span>Example: Instead of "Will I get the job?" ask "What do I need to know about my career path?"</span>
+                </p>
+              </div>
+            </div>
           </div>
         </motion.div>
 
