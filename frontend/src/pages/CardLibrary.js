@@ -167,12 +167,12 @@ const CardLibrary = () => {
               >
                 <TarotCard card={card} isRevealed={false} size="small" />
                 <div className="mt-4 text-center">
-                  <h3 className="font-subheading text-sm text-celestial-text mb-2">{card.name}</h3>
+                  <h3 className="font-subheading text-lg text-[#D4AF37] mb-3">{card.name}</h3>
                   <div className="flex flex-wrap gap-1 justify-center">
-                    {card.keywords.slice(0, 2).map((keyword, i) => (
+                    {card.keywords.slice(0, 3).map((keyword, i) => (
                       <span
                         key={i}
-                        className="font-body text-xs px-2 py-1 bg-gold-base/20 text-celestial-muted rounded-sm"
+                        className="font-reading text-sm px-2 py-1 bg-gold-base/20 text-[#E8DCC8] rounded-sm"
                       >
                         {keyword}
                       </span>
