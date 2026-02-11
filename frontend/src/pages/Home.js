@@ -60,7 +60,7 @@ const Home = () => {
             
             {loading ? (
               <div className="text-center py-12" data-testid="daily-card-loading">
-                <div className="font-body text-celestial-muted">Drawing your daily card...</div>
+                <div className="font-reading text-celestial-muted">Drawing your daily card...</div>
               </div>
             ) : dailyCard ? (
               <div className="flex flex-col items-center gap-6" data-testid="daily-card-display">
@@ -70,13 +70,13 @@ const Home = () => {
                   isRevealed={true}
                   size="large"
                 />
-                <div className="font-body text-base sm:text-lg text-center text-celestial-text leading-relaxed max-w-xl">
+                <div className="font-reading text-base sm:text-lg text-center text-[#E8DCC8] leading-relaxed max-w-xl">
                   {dailyCard.interpretation}
                 </div>
               </div>
             ) : (
               <div className="text-center py-12" data-testid="daily-card-error">
-                <div className="font-body text-red-400">Unable to draw daily card. Please try again later.</div>
+                <div className="font-reading text-red-400">Unable to draw daily card. Please try again later.</div>
               </div>
             )}
           </div>
