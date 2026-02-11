@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useDeck } from '../context/DeckContext';
 
 const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = false, size = 'medium' }) => {
   const [isFlipped, setIsFlipped] = useState(isRevealed);
+  const { selectedDeck, getCardImageUrl, getBackImageUrl } = useDeck();
 
   React.useEffect(() => {
     setIsFlipped(isRevealed);
@@ -21,6 +23,10 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
       setIsFlipped(!isFlipped);
     }
   };
+
+  // Get image URL based on selected deck
+  const cardImageUrl = card ? getCardImageUrl(card.id) : null;
+  const backImageUrl = getBackImageUrl();
 
   return (
     <div className="flex flex-col items-center gap-3">
@@ -47,7 +53,7 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
             className="absolute w-full h-full rounded-lg border-4 border-gold-base shadow-2xl bg-cover bg-center"
             style={{
               backfaceVisibility: 'hidden',
-              backgroundImage: 'url(/cards/back.png)',
+              backgroundImage: `url(${backImageUrl})`,
               backgroundSize: 'cover',
             }}
           >
@@ -62,32 +68,44 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
           >
             {card && (
               <div className="w-full h-full flex flex-col items-center justify-center">
-                {card.image_url ? (
-                  <img 
-                    src={card.image_url} 
-                    alt={card.name}
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
-                    <div className="font-heading text-base sm:text-lg lg:text-xl text-center text-ink-black mb-2">
-                      {card.name}
-                    </div>
-                    <div className="flex-1 flex items-center justify-center">
-                      <div className="text-4xl sm:text-5xl lg:text-6xl">
-                        {card.arcana === 'major' ? '✦' : getSuitSymbol(card.suit)}
-                      </div>
-                    </div>
-                    <div className="font-body text-xs sm:text-sm text-center text-ink-faded mt-2 line-clamp-2">
-                      {card.upright_meaning}
-                    </div>
-                  </div>
-                )}
+                <CardFace card={card} cardImageUrl={cardImageUrl} />
               </div>
             )}
           </div>
         </motion.div>
       </motion.div>
+    </div>
+  );
+};
+
+const CardFace = ({ card, cardImageUrl }) => {
+  const [imageError, setImageError] = useState(false);
+
+  if (cardImageUrl && !imageError) {
+    return (
+      <img 
+        src={cardImageUrl} 
+        alt={card.name}
+        className="w-full h-full object-cover rounded-lg"
+        onError={() => setImageError(true)}
+      />
+    );
+  }
+
+  // Fallback text-based display
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center p-3 sm:p-4">
+      <div className="font-heading text-base sm:text-lg lg:text-xl text-center text-ink-black mb-2">
+        {card.name}
+      </div>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="text-4xl sm:text-5xl lg:text-6xl">
+          {card.arcana === 'major' ? '✦' : getSuitSymbol(card.suit)}
+        </div>
+      </div>
+      <div className="font-body text-xs sm:text-sm text-center text-ink-faded mt-2 line-clamp-2">
+        {card.upright_meaning}
+      </div>
     </div>
   );
 };
