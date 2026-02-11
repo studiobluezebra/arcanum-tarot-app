@@ -135,13 +135,15 @@ const ReadingResult = () => {
           </motion.div>
         )}
 
-        {/* Card Readings - Vertical Layout */}
-        <div className="space-y-16 mb-20">
+        {/* Card Readings - Vertical Layout with Card Image */}
+        <div className="space-y-12 mb-20">
           {['Past', 'Present', 'Future'].map((position, index) => {
             const card = getCardForPosition(position);
             const cardReading = cardReadings.find(r => r.position === position);
             
             if (!card) return null;
+            
+            const cardImageUrl = getCardImageUrl(card.id);
             
             return (
               <motion.div
@@ -149,22 +151,39 @@ const ReadingResult = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
-                className="border-l-2 border-[#3D3D3D] pl-8"
+                className="flex gap-6 sm:gap-8"
               >
-                {/* Position Label */}
-                <div className="font-ui text-xs tracking-[0.3em] uppercase text-[#8B8B8B] mb-4">
-                  {position}
+                {/* Card Image - Left Side */}
+                <div className="flex-shrink-0">
+                  <div className="w-20 h-32 sm:w-24 sm:h-36 rounded-lg overflow-hidden border-2 border-[#3D3D3D]">
+                    <img 
+                      src={cardImageUrl} 
+                      alt={card.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  </div>
                 </div>
                 
-                {/* Card Name - Big, decorative font */}
-                <h2 className="font-heading text-3xl sm:text-4xl text-[#D4AF37] mb-6">
-                  {card.name}
-                </h2>
-                
-                {/* Interpretation - Roboto font */}
-                <p className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed">
-                  {cardReading ? cardReading.content : card.upright_meaning}
-                </p>
+                {/* Text Content - Right Side */}
+                <div className="flex-1 border-l-2 border-[#3D3D3D] pl-6">
+                  {/* Position Label */}
+                  <div className="font-ui text-xs tracking-[0.3em] uppercase text-[#8B8B8B] mb-2">
+                    {position}
+                  </div>
+                  
+                  {/* Card Name - Big, decorative font */}
+                  <h2 className="font-heading text-2xl sm:text-3xl text-[#D4AF37] mb-4">
+                    {card.name}
+                  </h2>
+                  
+                  {/* Interpretation - Roboto font */}
+                  <p className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed">
+                    {cardReading ? cardReading.content : card.upright_meaning}
+                  </p>
+                </div>
               </motion.div>
             );
           })}
