@@ -307,11 +307,7 @@ const ReadingResult = () => {
             </h2>
           </div>
           <div className="max-w-2xl mx-auto space-y-4">
-            {[
-              'What feels promising but unclear?',
-              'What information is still missing?',
-              'What small step would reduce uncertainty?'
-            ].map((question, index) => (
+            {decisionPrompts.slice(0, 3).map((question, index) => (
               <div 
                 key={index}
                 className="bg-[#1E1E1E] border border-[#3D3D3D] p-4 rounded-lg"
