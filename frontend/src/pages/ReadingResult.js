@@ -236,7 +236,7 @@ const ReadingResult = () => {
           </motion.div>
         )}
 
-        {/* Follow-up Questions - Based on the spread */}
+        {/* Reflect Before Deciding */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -245,38 +245,64 @@ const ReadingResult = () => {
         >
           <div className="text-center mb-8">
             <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
-              Go Deeper
+              Reflect Before Deciding
             </h2>
-            <p className="font-reading text-sm text-[#8B8B8B] mt-2">
-              Based on your reading, consider exploring these questions for more guidance
-            </p>
           </div>
           <div className="max-w-2xl mx-auto space-y-4">
-            {reading.cards && reading.cards.map((drawn, index) => {
-              const position = drawn.position;
-              const cardName = drawn.card.name;
-              const suggestions = {
-                Past: `What lessons from "${cardName}" should I carry forward?`,
-                Present: `How can I better work with the energy of "${cardName}" right now?`,
-                Future: `What actions can help me align with the potential of "${cardName}"?`
-              };
-              return (
-                <div 
-                  key={index}
-                  className="bg-[#1E1E1E] border border-[#3D3D3D] p-4 rounded-lg hover:border-[#D4AF37]/50 transition-all cursor-pointer"
-                  onClick={() => {
-                    navigate('/draw', { state: { prefillQuestion: suggestions[position] } });
-                  }}
-                >
-                  <p className="font-ui text-xs text-[#8B8B8B] uppercase tracking-widest mb-2">
-                    {position}
-                  </p>
-                  <p className="font-reading text-base text-[#E8DCC8]">
-                    {suggestions[position]}
-                  </p>
-                </div>
-              );
-            })}
+            {[
+              'What feels promising but unclear?',
+              'What information is still missing?',
+              'What small step would reduce uncertainty?'
+            ].map((question, index) => (
+              <div 
+                key={index}
+                className="bg-[#1E1E1E] border border-[#3D3D3D] p-4 rounded-lg"
+              >
+                <p className="font-reading text-base text-[#E8DCC8]">
+                  {question}
+                </p>
+              </div>
+            ))}
+            <p className="font-reading text-sm text-[#8B8B8B] text-center mt-6 italic">
+              This creates decision momentum.
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Your Next Step */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.1 }}
+          className="border-t border-[#3D3D3D] pt-12 mb-12"
+        >
+          <div className="text-center mb-8">
+            <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
+              Your Next Step
+            </h2>
+          </div>
+          <div className="flex justify-center gap-4 flex-wrap max-w-2xl mx-auto">
+            <button
+              onClick={() => navigate('/draw')}
+              data-testid="need-clarity-btn"
+              className="bg-transparent text-[#E8DCC8] border border-[#3D3D3D] font-ui text-sm uppercase tracking-widest px-6 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300"
+            >
+              I need more clarity
+            </button>
+            <button
+              onClick={() => navigate('/home')}
+              data-testid="see-what-to-do-btn"
+              className="bg-[#D4AF37] text-[#141414] font-ui text-sm uppercase tracking-widest px-6 py-3 hover:bg-[#E8C872] transition-all duration-300"
+            >
+              I see what to do
+            </button>
+            <button
+              onClick={() => navigate('/draw')}
+              data-testid="explore-angle-btn"
+              className="bg-transparent text-[#E8DCC8] border border-[#3D3D3D] font-ui text-sm uppercase tracking-widest px-6 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300"
+            >
+              I want to explore another angle
+            </button>
           </div>
         </motion.div>
 
