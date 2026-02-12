@@ -27,6 +27,29 @@ const ReadingResult = () => {
     );
   }
 
+  // Get card metadata from interpretation response
+  const cardMetadata = reading.card_metadata || [];
+
+  // Get metadata for a card by its id
+  const getMetadataForCard = (cardId) => {
+    return cardMetadata.find(m => m.card_id === cardId) || {};
+  };
+
+  // Collect decision prompts from all cards
+  const getCardDecisionPrompts = () => {
+    const allPrompts = [];
+    cardMetadata.forEach(meta => {
+      if (meta.decision_prompts) {
+        allPrompts.push(...meta.decision_prompts.slice(0, 1)); // Take 1 from each card
+      }
+    });
+    return allPrompts.length > 0 ? allPrompts : [
+      'What feels promising but unclear?',
+      'What information is still missing?',
+      'What small step would reduce uncertainty?'
+    ];
+  };
+
   // Parse interpretation - remove markdown and split by position
   const parseInterpretation = (text) => {
     if (!text) return { cardReadings: [], synthesis: '' };
@@ -134,6 +157,9 @@ const ReadingResult = () => {
     const drawn = reading.cards.find(c => c.position === position);
     return drawn?.card;
   };
+
+  // Get decision prompts from cards
+  const decisionPrompts = getCardDecisionPrompts();
 
   return (
     <div className="min-h-screen py-12 sm:py-20 bg-[#141414]" data-testid="reading-result-page">
