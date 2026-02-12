@@ -275,48 +275,85 @@ async def get_interpretation(request: InterpretRequest):
         chat = LlmChat(
             api_key=llm_key,
             session_id=str(uuid.uuid4()),
-            system_message="You are a decision clarity advisor who helps people see patterns in their situations. Write in plain text without any markdown formatting (no #, *, _, or other symbols). Focus on pattern recognition and decision framing, not predictions or advice."
+            system_message="You are a decision clarity advisor who helps people see patterns in their situations. Write in plain text without any markdown formatting (no #, *, _, or other symbols). Focus on pattern recognition and decision framing, not predictions or advice. Be concise and practical."
         )
         chat.with_model("openai", "gpt-5.2")
         
+        # Build rich card information using templates
         cards_info = []
+        card_keywords = []
+        all_decision_prompts = []
+        
         positions_map = {
             "Past": "Influencing Forces",
             "Present": "Current Mindset", 
             "Future": "Emerging Direction"
         }
+        
         for drawn in request.cards:
             card = drawn.card
-            meaning = card.upright_meaning
+            card_id = card.id
+            template = get_card_template(card_id)
+            
             new_position = positions_map.get(drawn.position, drawn.position)
-            position_text = f" (Position: {new_position})" if drawn.position else ""
-            cards_info.append(f"{card.name}{position_text}: {meaning}")
+            lens = template.get("lens_keyword", "")
+            core_dynamic = template.get("core_dynamic", card.upright_meaning)
+            situation_highlights = template.get("situation_highlight", [])
+            
+            card_keywords.append(f"{lens} ({card.name})")
+            
+            # Collect decision prompts from each card
+            prompts = template.get("decision_prompts", [])
+            if prompts:
+                all_decision_prompts.extend(prompts[:2])  # Take top 2 from each card
+            
+            # Build rich card info
+            highlights_text = ", ".join(situation_highlights[:2]) if situation_highlights else ""
+            cards_info.append(f"{card.name} ({new_position}):\n  Lens: {lens}\n  Core: {core_dynamic}\n  Situation: {highlights_text}")
         
-        cards_text = "\n".join(cards_info)
+        cards_text = "\n\n".join(cards_info)
+        keywords_text = " + ".join(card_keywords)
         question_text = f"Situation: {request.question}\n\n" if request.question else ""
         
-        prompt = f"""{question_text}Cards drawn:
+        prompt = f"""{question_text}Cards drawn with their Flipwill templates:
+
 {cards_text}
+
+Pattern: {keywords_text}
 
 Provide a decision-focused interpretation following this exact structure. Use plain text only (no markdown, no #, *, or special symbols):
 
-Influencing Forces: Write 2-3 sentences about what shaped this situation or what background forces are at play.
+Influencing Forces: Write 2-3 sentences about what shaped this situation, using the lens keyword and core dynamic of the first card as guidance.
 
-Current Mindset: Write 2-3 sentences about what is active now in the person's thinking or circumstances.
+Current Mindset: Write 2-3 sentences about what is active now, using the lens keyword and core dynamic of the second card as guidance.
 
-Emerging Direction: Write 2-3 sentences about what may develop if nothing changes, without being predictive.
+Emerging Direction: Write 2-3 sentences about what may develop if nothing changes, using the lens keyword and core dynamic of the third card as guidance.
 
-Decision Insight: Write this section in 3 clear parts:
-1. First, identify what pattern connects all three cards (one sentence starting with "Your situation combines...").
-2. Then state what tension or dynamic exists (one sentence starting with "This suggests..." or "The key dynamic is...").
-3. Finally, offer an action principle without being prescriptive (one sentence starting with "You may benefit from...").
+Decision Insight: Write this section with this exact structure:
+- Pattern: One sentence identifying what pattern connects the cards, using their lens keywords ({keywords_text}).
+- Tension: One sentence about what tension or dynamic exists between these elements.
+- Approach: One sentence suggesting a practical approach without being prescriptive.
+- Next Step: One concrete, small action to take within 48 hours.
 
-Keep your tone neutral, observational, and focused on helping them see their situation clearly."""
+Keep your tone neutral, observational, and focused on helping them see their situation clearly. No fortune-telling or predictions."""
         
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
         
-        return {"interpretation": response}
+        # Return interpretation plus card metadata for frontend
+        return {
+            "interpretation": response,
+            "card_metadata": [
+                {
+                    "card_id": drawn.card.id,
+                    "lens_keyword": get_lens_keyword(drawn.card.id),
+                    "core_dynamic": get_core_dynamic(drawn.card.id),
+                    "decision_prompts": get_decision_prompts(drawn.card.id)[:3],
+                    "situation_highlights": get_situation_highlights(drawn.card.id)[:2]
+                }
+                for drawn in request.cards
+            ]
+        }
     
     except Exception as e:
         logging.error(f"Error getting interpretation: {str(e)}")
