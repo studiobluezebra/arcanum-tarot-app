@@ -143,7 +143,7 @@ const DrawCard = () => {
               data-testid="draw-cards-btn"
               className="bg-gold-base text-celestial-dark font-ui uppercase tracking-widest px-12 py-4 text-lg hover:bg-gold-shimmer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isDrawing ? 'Drawing Cards...' : 'Draw Three Cards'}
+              {isDrawing ? 'Drawing Cards...' : 'Reveal Perspectives'}
             </button>
           </motion.div>
         ) : (
