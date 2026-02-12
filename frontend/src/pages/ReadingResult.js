@@ -249,7 +249,7 @@ const ReadingResult = () => {
                   key={index}
                   className="bg-[#1E1E1E] border border-[#3D3D3D] p-4 rounded-lg hover:border-[#D4AF37]/50 transition-all cursor-pointer"
                   onClick={() => {
-                    navigate('/draw');
+                    navigate('/draw', { state: { prefillQuestion: suggestions[position] } });
                   }}
                 >
                   <p className="font-ui text-xs text-[#8B8B8B] uppercase tracking-widest mb-2">
