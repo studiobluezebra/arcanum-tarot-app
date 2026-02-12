@@ -274,34 +274,43 @@ async def get_interpretation(request: InterpretRequest):
         chat = LlmChat(
             api_key=llm_key,
             session_id=str(uuid.uuid4()),
-            system_message="You are a wise tarot reader who provides clear, insightful interpretations. Write in plain text without any markdown formatting (no #, *, _, or other symbols). Be empathetic and help the querent reflect on their situation."
+            system_message="You are a decision clarity advisor who helps people see patterns in their situations. Write in plain text without any markdown formatting (no #, *, _, or other symbols). Focus on pattern recognition and decision framing, not predictions or advice."
         )
         chat.with_model("openai", "gpt-5.2")
         
         cards_info = []
+        positions_map = {
+            "Past": "Influencing Forces",
+            "Present": "Current Mindset", 
+            "Future": "Emerging Direction"
+        }
         for drawn in request.cards:
             card = drawn.card
             meaning = card.upright_meaning
-            position_text = f" (Position: {drawn.position})" if drawn.position else ""
+            new_position = positions_map.get(drawn.position, drawn.position)
+            position_text = f" (Position: {new_position})" if drawn.position else ""
             cards_info.append(f"{card.name}{position_text}: {meaning}")
         
         cards_text = "\n".join(cards_info)
-        question_text = f"Question: {request.question}\n\n" if request.question else ""
+        question_text = f"Situation: {request.question}\n\n" if request.question else ""
         
         prompt = f"""{question_text}Cards drawn:
 {cards_text}
 
-Provide an interpretation following this exact structure. Use plain text only (no markdown, no #, *, or special symbols):
+Provide a decision-focused interpretation following this exact structure. Use plain text only (no markdown, no #, *, or special symbols):
 
-Past: Write 2-3 sentences about what the Past card reveals about the background or root of this situation.
+Influencing Forces: Write 2-3 sentences about what shaped this situation or what background forces are at play.
 
-Present: Write 2-3 sentences about what the Present card shows about the current circumstances or challenges.
+Current Mindset: Write 2-3 sentences about what is active now in the person's thinking or circumstances.
 
-Future: Write 2-3 sentences about what the Future card suggests about the path ahead or potential outcomes.
+Emerging Direction: Write 2-3 sentences about what may develop if nothing changes, without being predictive.
 
-Synthesis: Write 3-4 sentences that weave all three cards together into unified guidance. Address the querent's question directly and offer practical wisdom they can apply.
+Decision Insight: Write this section in 3 clear parts:
+1. First, identify what pattern connects all three cards (one sentence starting with "Your situation combines...").
+2. Then state what tension or dynamic exists (one sentence starting with "This suggests..." or "The key dynamic is...").
+3. Finally, offer an action principle without being prescriptive (one sentence starting with "You may benefit from...").
 
-Keep your tone warm, clear, and insightful."""
+Keep your tone neutral, observational, and focused on helping them see their situation clearly."""
         
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
