@@ -114,20 +114,16 @@ const DrawCard = () => {
             {/* Question Guidance */}
             <div className="border-t border-celestial-border pt-6">
               <p className="font-reading text-sm text-[#8B8B8B] text-center mb-4">
-                How to ask the right question
+                How to get the most insight
               </p>
               <div className="font-reading text-sm text-[#E8DCC8] space-y-2">
                 <p className="flex items-start gap-2">
                   <span className="text-[#D4AF37]">✦</span>
-                  <span>Tarot reveals <strong>dynamics and insights</strong>, not yes/no answers</span>
+                  <span>Describe the situation you want clarity on.</span>
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="text-[#D4AF37]">✦</span>
-                  <span>Ask about <strong>what to focus on</strong>, <strong>what influences</strong> a situation, or <strong>what you need to understand</strong></span>
-                </p>
-                <p className="flex items-start gap-2">
-                  <span className="text-[#D4AF37]">✦</span>
-                  <span>Example: "What is the overall dynamic of my relationship with..." or "What energies surround my career path right now?"</span>
+                  <span>Be open — the goal is perspective, not prediction.</span>
                 </p>
               </div>
             </div>
