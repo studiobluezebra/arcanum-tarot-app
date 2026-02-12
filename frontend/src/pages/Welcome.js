@@ -26,7 +26,7 @@ const Welcome = () => {
           transition={{ duration: 1, delay: 0.5 }}
           className="font-subheading text-xl sm:text-2xl text-[#E8DCC8] mb-8"
         >
-          Reveal the dynamics of your life
+          Clarity starts with a flip.
         </motion.p>
 
         {/* Explanation Text */}
@@ -37,13 +37,19 @@ const Welcome = () => {
           className="font-reading text-base sm:text-lg text-[#8B8B8B] mb-12 leading-relaxed space-y-4"
         >
           <p>
-            Tarot is not about predicting the future or giving yes/no answers.
+            FlipWill is a decision companion designed to help you think when you're stuck.
           </p>
           <p>
-            It's a mirror that reflects the <span className="text-[#E8DCC8]">energies</span>, <span className="text-[#E8DCC8]">dynamics</span>, and <span className="text-[#E8DCC8]">influences</span> surrounding your question, helping you gain clarity and insight into your situation.
+            It doesn't predict the future.
           </p>
           <p>
-            Ask open questions. Reflect. Discover.
+            It challenges your perspective.
+          </p>
+          <p>
+            Using structured randomness, FlipWill helps you see your situation differently — so you can <span className="text-[#E8DCC8]">choose with confidence</span>.
+          </p>
+          <p className="text-[#E8DCC8] font-subheading text-lg sm:text-xl pt-4">
+            Flip the card. Own the choice.
           </p>
         </motion.div>
 
@@ -54,9 +60,9 @@ const Welcome = () => {
           transition={{ duration: 0.5, delay: 1 }}
           onClick={() => navigate('/home')}
           data-testid="enter-app-btn"
-          className="bg-[#D4AF37] text-[#141414] font-ui uppercase tracking-widest px-12 py-4 text-lg hover:bg-[#E8C872] transition-all duration-300"
+          className="bg-[#D4AF37] text-[#141414] font-ui uppercase tracking-widest px-16 sm:px-24 py-4 text-lg hover:bg-[#E8C872] transition-all duration-300"
         >
-          Enter
+          Flip the Card
         </motion.button>
       </motion.div>
 
