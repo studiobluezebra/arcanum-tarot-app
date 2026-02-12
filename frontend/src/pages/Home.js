@@ -144,6 +144,13 @@ const Home = () => {
                       {showSaved ? 'saved' : 'thank you for your feedback'}
                     </motion.p>
                   )}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-12" data-testid="daily-card-error">
+                <div className="font-reading text-red-400">Unable to draw daily card. Please try again later.</div>
+              </div>
+            )}
           </div>
         </motion.div>
 
