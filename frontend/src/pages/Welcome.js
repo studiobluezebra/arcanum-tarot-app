@@ -14,21 +14,10 @@ const Welcome = () => {
         transition={{ duration: 1 }}
         className="text-center max-w-2xl"
       >
-        {/* Logo Placeholder */}
+        {/* Logo */}
         <div className="mb-8">
-          {/* Replace this with your logo: <img src="/logo.png" alt="Flipwill" className="w-32 h-32 mx-auto" /> */}
-          <GiCrystalBall className="w-24 h-24 sm:w-32 sm:h-32 mx-auto text-[#D4AF37]" />
+          <img src="/logo.png" alt="Flipwill" className="w-64 sm:w-80 mx-auto" />
         </div>
-
-        {/* App Name */}
-        <motion.h1
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="font-heading text-5xl sm:text-6xl lg:text-7xl text-[#D4AF37] mb-6"
-        >
-          Flipwill
-        </motion.h1>
 
         {/* Tagline */}
         <motion.p
