@@ -306,28 +306,6 @@ const ReadingResult = () => {
           </div>
         </motion.div>
 
-        {/* Action buttons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 1.2 }}
-          className="flex justify-center gap-4 flex-wrap pt-8"
-        >
-          <button
-            onClick={() => navigate('/draw')}
-            data-testid="new-reading-btn"
-            className="bg-[#D4AF37] text-[#141414] font-ui uppercase tracking-widest px-8 py-3 hover:bg-[#E8C872] transition-all duration-300"
-          >
-            New Reading
-          </button>
-          <button
-            onClick={() => navigate('/history')}
-            data-testid="view-history-btn"
-            className="bg-transparent text-[#8B8B8B] border border-[#3D3D3D] font-ui uppercase tracking-widest px-8 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300"
-          >
-            View History
-          </button>
-        </motion.div>
       </div>
     </div>
   );
