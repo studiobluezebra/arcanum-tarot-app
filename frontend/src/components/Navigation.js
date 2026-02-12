@@ -17,8 +17,7 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/home" className="flex items-center space-x-3" data-testid="logo-link">
-            <GiCrystalBall className="w-10 h-10 text-gold-base" />
-            <span className="font-heading text-2xl sm:text-3xl text-gold-base">Flipwill</span>
+            <img src="/logo.png" alt="Flipwill" className="h-12 sm:h-14" />
           </Link>
 
           <div className="flex space-x-1 sm:space-x-4">
