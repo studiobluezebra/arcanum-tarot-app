@@ -192,6 +192,10 @@ const ReadingResult = () => {
             if (!card) return null;
             
             const cardImageUrl = getCardImageUrl(card.id);
+            const metadata = getMetadataForCard(card.id);
+            const lensKeyword = metadata.lens_keyword || '';
+            const coreDynamic = metadata.core_dynamic || '';
+            const situationHighlights = metadata.situation_highlights || [];
             
             return (
               <motion.div
@@ -225,10 +229,38 @@ const ReadingResult = () => {
                     {posData.subtitle}
                   </div>
                   
+                  {/* Lens Keyword Chip */}
+                  {lensKeyword && (
+                    <div className="inline-block mb-3">
+                      <span className="px-3 py-1 bg-[#D4AF37]/10 border border-[#D4AF37]/30 rounded-full text-[#D4AF37] font-ui text-xs uppercase tracking-wider">
+                        {lensKeyword}
+                      </span>
+                    </div>
+                  )}
+                  
                   {/* Card Name - Big, decorative font */}
-                  <h2 className="font-heading text-2xl sm:text-3xl text-[#D4AF37] mb-4">
+                  <h2 className="font-heading text-2xl sm:text-3xl text-[#D4AF37] mb-2">
                     {card.name}
                   </h2>
+                  
+                  {/* Core Dynamic - One line under card name */}
+                  {coreDynamic && (
+                    <p className="font-reading text-sm text-[#B8B8B8] italic mb-4">
+                      {coreDynamic}
+                    </p>
+                  )}
+                  
+                  {/* Situation Highlights - 2 bullet points */}
+                  {situationHighlights.length > 0 && (
+                    <ul className="mb-4 space-y-1">
+                      {situationHighlights.map((highlight, i) => (
+                        <li key={i} className="font-reading text-sm text-[#A8A8A8] flex items-start gap-2">
+                          <span className="text-[#D4AF37]">•</span>
+                          <span>{highlight}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                   
                   {/* Interpretation - Roboto font */}
                   <p className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed">
