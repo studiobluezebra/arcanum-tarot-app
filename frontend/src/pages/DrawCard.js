@@ -99,13 +99,13 @@ const DrawCard = () => {
         >
           <div className="bg-celestial-card border border-celestial-border p-8 rounded-lg shadow-lg">
             <label className="font-subheading text-lg text-celestial-text mb-4 block text-center">
-              What guidance do you seek?
+              What do you want clarity on?
             </label>
             <input
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Ask your question..."
+              placeholder="Example: Should I take this opportunity? What is influencing this situation? What should I pay attention to?"
               data-testid="question-input"
               className="w-full px-6 py-4 bg-celestial-dark border border-celestial-border rounded-lg font-body text-lg text-celestial-text placeholder-celestial-muted focus:outline-none focus:border-gold-base transition-colors mb-6"
               disabled={drawnCards.length > 0}
