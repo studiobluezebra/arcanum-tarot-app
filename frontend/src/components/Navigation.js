@@ -17,7 +17,7 @@ const Navigation = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <Link to="/home" className="flex items-center space-x-3" data-testid="logo-link">
-            <img src="/logo.png" alt="Flipwill" className="h-12 sm:h-14" />
+            <img src="/logo-horizontal.png" alt="Flipwill" className="h-10 sm:h-12" />
           </Link>
 
           <div className="flex space-x-1 sm:space-x-4">
