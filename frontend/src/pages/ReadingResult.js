@@ -47,31 +47,40 @@ const ReadingResult = () => {
     let inSynthesis = false;
     let remainingText = [];
     
+    // Position mappings for parsing
+    const positionKeywords = {
+      'influencing forces': 'Influencing Forces',
+      'influencing': 'Influencing Forces',
+      'past': 'Influencing Forces',
+      'current mindset': 'Current Mindset',
+      'current': 'Current Mindset',
+      'present': 'Current Mindset',
+      'emerging direction': 'Emerging Direction',
+      'emerging': 'Emerging Direction',
+      'future': 'Emerging Direction'
+    };
+    
     for (const line of lines) {
       const lowerLine = line.toLowerCase().trim();
       
-      if (lowerLine.startsWith('past') && (lowerLine.includes(':') || lowerLine.includes('-') || lowerLine.includes('('))) {
+      // Check for position keywords
+      let foundPosition = null;
+      for (const [keyword, position] of Object.entries(positionKeywords)) {
+        if (lowerLine.startsWith(keyword) && (lowerLine.includes(':') || lowerLine.includes('-') || lowerLine.includes('('))) {
+          foundPosition = position;
+          break;
+        }
+      }
+      
+      if (foundPosition) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
-        currentSection = 'Past';
-        currentContent = line.replace(/^past[:\-\s\(]*/i, '').replace(/\)?\s*$/, '').trim();
+        currentSection = foundPosition;
+        // Remove the position label from the content
+        currentContent = line.replace(/^[^:–\-]+[:\-–]\s*/i, '').trim();
         inSynthesis = false;
-      } else if (lowerLine.startsWith('present') && (lowerLine.includes(':') || lowerLine.includes('-') || lowerLine.includes('('))) {
-        if (currentSection && currentContent) {
-          cardReadings.push({ position: currentSection, content: currentContent.trim() });
-        }
-        currentSection = 'Present';
-        currentContent = line.replace(/^present[:\-\s\(]*/i, '').replace(/\)?\s*$/, '').trim();
-        inSynthesis = false;
-      } else if (lowerLine.startsWith('future') && (lowerLine.includes(':') || lowerLine.includes('-') || lowerLine.includes('('))) {
-        if (currentSection && currentContent) {
-          cardReadings.push({ position: currentSection, content: currentContent.trim() });
-        }
-        currentSection = 'Future';
-        currentContent = line.replace(/^future[:\-\s\(]*/i, '').replace(/\)?\s*$/, '').trim();
-        inSynthesis = false;
-      } else if (lowerLine.includes('synthesis') || lowerLine.includes('overall') || lowerLine.includes('summary') || lowerLine.includes('together') || lowerLine.includes('conclusion') || lowerLine.includes('guidance')) {
+      } else if (lowerLine.includes('decision insight') || lowerLine.includes('synthesis') || lowerLine.includes('overall') || lowerLine.includes('summary') || lowerLine.includes('together') || lowerLine.includes('conclusion') || lowerLine.includes('guidance')) {
         if (currentSection && currentContent) {
           cardReadings.push({ position: currentSection, content: currentContent.trim() });
         }
@@ -79,7 +88,7 @@ const ReadingResult = () => {
         currentContent = '';
         inSynthesis = true;
         // Check if there's content after the label on the same line
-        const afterLabel = line.replace(/^.*(synthesis|overall|summary|together|conclusion|guidance)[:\-\s]*/i, '').trim();
+        const afterLabel = line.replace(/^.*(decision insight|synthesis|overall|summary|together|conclusion|guidance)[:\-\s]*/i, '').trim();
         if (afterLabel) {
           synthesis += afterLabel + ' ';
         }
