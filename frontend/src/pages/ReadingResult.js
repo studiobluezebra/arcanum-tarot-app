@@ -214,7 +214,7 @@ const ReadingResult = () => {
           })}
         </div>
 
-        {/* Oracle's Synthesis - After all three cards */}
+        {/* Decision Insight - After all three cards */}
         {synthesis && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -224,7 +224,7 @@ const ReadingResult = () => {
           >
             <div className="text-center mb-8">
               <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
-                The Oracle's Synthesis
+                Decision Insight
               </h2>
             </div>
             <p
