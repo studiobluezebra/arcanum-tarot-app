@@ -42,7 +42,7 @@ const Home = () => {
   const getCardImagePath = (card) => {
     if (!card) return '';
     const deckFolder = selectedDeck || 'original';
-    return `/cards/${deckFolder}/${card.image}`;
+    return `/cards/${deckFolder}/${card.id}.png`;
   };
 
   return (
