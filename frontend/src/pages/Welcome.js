@@ -64,6 +64,16 @@ const Welcome = () => {
         >
           Flip the Card
         </motion.button>
+        
+        {/* Subtext under button */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 1.1 }}
+          className="font-reading text-sm text-[#8B8B8B] mt-4"
+        >
+          No predictions. Just perspective.
+        </motion.p>
       </motion.div>
 
       {/* Footer */}
