@@ -18,7 +18,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-20">
           <Link to="/" className="flex items-center space-x-3" data-testid="logo-link">
             <GiCrystalBall className="w-10 h-10 text-gold-base" />
-            <span className="font-heading text-2xl sm:text-3xl text-gold-base">Arcanum</span>
+            <span className="font-heading text-2xl sm:text-3xl text-gold-base">Flipwill</span>
           </Link>
 
           <div className="flex space-x-1 sm:space-x-4">
