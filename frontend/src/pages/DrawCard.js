@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import TarotCard from '../components/TarotCard';
@@ -9,11 +9,19 @@ const API = `${BACKEND_URL}/api`;
 
 const DrawCard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [question, setQuestion] = useState('');
   const [drawnCards, setDrawnCards] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isInterpreting, setIsInterpreting] = useState(false);
   const [revealed, setRevealed] = useState(false);
+
+  // Pre-fill question from Go Deeper section
+  useEffect(() => {
+    if (location.state?.prefillQuestion) {
+      setQuestion(location.state.prefillQuestion);
+    }
+  }, [location.state]);
 
   const handleDraw = async () => {
     if (!question.trim()) {
