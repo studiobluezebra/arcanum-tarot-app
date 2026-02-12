@@ -63,6 +63,7 @@ const DrawCard = () => {
         question: question,
         spread_type: 'three-card',
         interpretation: response.data.interpretation,
+        card_metadata: response.data.card_metadata || [],
       };
 
       await axios.post(`${API}/readings`, reading);
