@@ -85,9 +85,9 @@ const DrawCard = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h1 className="font-heading text-4xl sm:text-5xl text-gold-base mb-4">Three Card Reading</h1>
+          <h1 className="font-heading text-4xl sm:text-5xl text-gold-base mb-4">Explore a Decision</h1>
           <p className="font-body text-base sm:text-lg text-celestial-text max-w-2xl mx-auto">
-            Past, Present, and Future. Focus on your question, clear your mind, and let the cards guide you.
+            Focus on a situation where you want clarity. The cards will offer perspectives to help you think differently.
           </p>
         </motion.div>
 
