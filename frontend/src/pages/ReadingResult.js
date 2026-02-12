@@ -155,9 +155,13 @@ const ReadingResult = () => {
 
         {/* Card Readings - Vertical Layout with Card Image */}
         <div className="space-y-12 mb-20">
-          {['Past', 'Present', 'Future'].map((position, index) => {
-            const card = getCardForPosition(position);
-            const cardReading = cardReadings.find(r => r.position === position);
+          {[
+            { position: 'Influencing Forces', subtitle: 'what shaped the situation', oldPosition: 'Past' },
+            { position: 'Current Mindset', subtitle: 'what is active now', oldPosition: 'Present' },
+            { position: 'Emerging Direction', subtitle: 'what may develop if nothing changes', oldPosition: 'Future' }
+          ].map((posData, index) => {
+            const card = getCardForPosition(posData.oldPosition);
+            const cardReading = cardReadings.find(r => r.position === posData.position);
             
             if (!card) return null;
             
@@ -165,7 +169,7 @@ const ReadingResult = () => {
             
             return (
               <motion.div
-                key={position}
+                key={posData.position}
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.2 }}
@@ -188,8 +192,11 @@ const ReadingResult = () => {
                 {/* Text Content - Right Side */}
                 <div className="flex-1 border-l-2 border-[#3D3D3D] pl-6">
                   {/* Position Label */}
-                  <div className="font-ui text-xs tracking-[0.3em] uppercase text-[#8B8B8B] mb-2">
-                    {position}
+                  <div className="font-ui text-xs tracking-[0.3em] uppercase text-[#8B8B8B] mb-1">
+                    {posData.position}
+                  </div>
+                  <div className="font-reading text-xs text-[#6B6B6B] italic mb-3">
+                    {posData.subtitle}
                   </div>
                   
                   {/* Card Name - Big, decorative font */}
