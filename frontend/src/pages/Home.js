@@ -37,10 +37,7 @@ const Home = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <GiCrystalBall className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 text-gold-base" />
-          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-gold-base mb-4">
-            Flipwill
-          </h1>
+          <img src="/logo.png" alt="Flipwill" className="w-48 sm:w-56 mx-auto mb-6" />
           <p className="font-body text-lg sm:text-xl text-celestial-text max-w-2xl mx-auto leading-relaxed">
             Unlock the wisdom of the tarot. Seek guidance through the ancient art of divination,
             where psychology meets mysticism.
