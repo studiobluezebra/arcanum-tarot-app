@@ -161,16 +161,16 @@ const Home = () => {
           className="text-center"
         >
           <div className="bg-celestial-card border border-celestial-border p-8 rounded-lg hover:border-gold-base/50 transition-all duration-300 max-w-2xl mx-auto">
-            <h3 className="font-subheading text-2xl text-celestial-text mb-3 tracking-wide">Three Card Reading</h3>
+            <h3 className="font-subheading text-2xl text-celestial-text mb-3 tracking-wide">Explore a decision</h3>
             <p className="font-body text-base text-celestial-muted mb-6 leading-relaxed">
-              Explore past, present, and future to understand your journey. Ask your question and receive guidance.
+              Get clarity on a situation that matters to you
             </p>
             <button
               onClick={() => navigate('/draw')}
               data-testid="start-reading-btn"
               className="bg-gold-base text-celestial-dark font-ui uppercase tracking-widest px-10 py-4 text-lg hover:bg-gold-shimmer transition-all duration-300 w-full"
             >
-              Begin Your Reading
+              start a decision
             </button>
           </div>
         </motion.div>
