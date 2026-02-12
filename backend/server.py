@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime, timezone
 import random
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from card_data import CARD_TEMPLATES, get_card_template, get_lens_keyword, get_core_dynamic, get_decision_prompts, get_situation_highlights
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
