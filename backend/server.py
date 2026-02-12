@@ -122,7 +122,7 @@ DECK_THEMES = {
     "anime": {
         "name": "Anime", 
         "description": "Vibrant expressive art for modern questions",
-        "available": False
+        "available": True
     },
     "alchemy": {
         "name": "Alchemy",
