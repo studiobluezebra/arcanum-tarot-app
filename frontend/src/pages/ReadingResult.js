@@ -85,10 +85,15 @@ const ReadingResult = () => {
             Interpretation
           </h2>
           <div
-            className="font-body text-base sm:text-lg text-ink-black leading-relaxed whitespace-pre-wrap"
+            className="font-body text-base sm:text-lg text-ink-black leading-loose whitespace-pre-wrap space-y-4"
+            style={{ lineHeight: '1.9', letterSpacing: '0.01em' }}
             data-testid="reading-interpretation"
           >
-            {reading.interpretation}
+            {reading.interpretation.split('\n\n').map((paragraph, index) => (
+              <p key={index} className="mb-4">
+                {paragraph}
+              </p>
+            ))}
           </div>
         </motion.div>
 
