@@ -280,48 +280,33 @@ const ReadingResult = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="border-t border-[#3D3D3D] pt-12 mb-16"
           >
-            <div className="text-center mb-8">
+            <div className="text-center mb-10">
               <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
                 Decision Insight
               </h2>
             </div>
-            <p
-              className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed text-center max-w-3xl mx-auto"
+            <div
+              className="max-w-3xl mx-auto space-y-6"
               data-testid="reading-interpretation"
             >
-              {synthesis}
-            </p>
+              {synthesis.split(/(?<=[.!?])\s+/).reduce((acc, sentence, i, arr) => {
+                // Group sentences into paragraphs of 2-3 sentences
+                const groupIndex = Math.floor(i / 2);
+                if (!acc[groupIndex]) acc[groupIndex] = [];
+                acc[groupIndex].push(sentence);
+                return acc;
+              }, []).map((group, index) => (
+                <p 
+                  key={index}
+                  className="font-reading text-lg sm:text-xl text-[#E8DCC8] leading-loose text-center"
+                  style={{ lineHeight: '2', letterSpacing: '0.02em' }}
+                >
+                  {group.join(' ')}
+                </p>
+              ))}
+            </div>
           </motion.div>
         )}
-
-        {/* Reflect Before Deciding */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          className="border-t border-[#3D3D3D] pt-12 mb-16"
-        >
-          <div className="text-center mb-8">
-            <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
-              Reflect Before Deciding
-            </h2>
-          </div>
-          <div className="max-w-2xl mx-auto space-y-4">
-            {decisionPrompts.slice(0, 3).map((question, index) => (
-              <div 
-                key={index}
-                className="bg-[#1E1E1E] border border-[#3D3D3D] p-4 rounded-lg"
-              >
-                <p className="font-reading text-base text-[#E8DCC8]">
-                  {question}
-                </p>
-              </div>
-            ))}
-            <p className="font-reading text-sm text-[#8B8B8B] text-center mt-6 italic">
-              This creates decision momentum.
-            </p>
-          </div>
-        </motion.div>
 
         {/* Your Next Step */}
         <motion.div
