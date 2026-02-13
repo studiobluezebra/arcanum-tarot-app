@@ -87,7 +87,7 @@ module.exports = {
                         }
                 },
                 fontFamily: {
-                        heading: ['Cinzel Decorative', 'serif'],
+                        heading: ['Montserrat', 'sans-serif'],
                         subheading: ['Montserrat', 'sans-serif'],
                         body: ['Montserrat', 'sans-serif'],
                         reading: ['Montserrat', 'sans-serif'],
