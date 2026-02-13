@@ -87,8 +87,8 @@ module.exports = {
                         }
                 },
                 fontFamily: {
-                        heading: ['Cinzel Decorative', 'serif'],
-                        subheading: ['Cormorant Garamond', 'serif'],
+                        heading: ['Montserrat', 'sans-serif'],
+                        subheading: ['Montserrat', 'sans-serif'],
                         body: ['Crimson Text', 'serif'],
                         reading: ['Roboto', 'sans-serif'],
                         ui: ['Lato', 'sans-serif']
