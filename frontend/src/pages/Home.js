@@ -16,13 +16,29 @@ const Home = () => {
   const [feedbackGiven, setFeedbackGiven] = useState(false);
   const [showSaved, setShowSaved] = useState(false);
 
+  // Get or create a persistent user ID for unique daily cards
+  const getUserId = () => {
+    let userId = localStorage.getItem('flipwill_user_id');
+    if (!userId) {
+      userId = crypto.randomUUID ? crypto.randomUUID() : 
+        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          const r = Math.random() * 16 | 0;
+          const v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      localStorage.setItem('flipwill_user_id', userId);
+    }
+    return userId;
+  };
+
   useEffect(() => {
     fetchDailyCard();
   }, []);
 
   const fetchDailyCard = async () => {
     try {
-      const response = await axios.get(`${API}/daily-card`);
+      const userId = getUserId();
+      const response = await axios.get(`${API}/daily-card?user_id=${userId}`);
       setDailyCard(response.data);
     } catch (error) {
       console.error('Error fetching daily card:', error);
