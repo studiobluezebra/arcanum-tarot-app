@@ -1,0 +1,122 @@
+{
+  "project_name": "Arcanum Tarot",
+  "design_philosophy": {
+    "identity": "The Alchemist's Study",
+    "core_concept": "Digital Tactility. The app should feel like a physical artifact—a grimoire or a spread cloth—rather than a SaaS product.",
+    "emotional_tone": "Mysterious, Introspective, Grounded, Ancient",
+    "key_principles": [
+      "Texture over Flatness: Use grain, paper overlays, and noise to kill digital sterility.",
+      "Typography as Ornament: Headings are spells. Use them largely and decoratively.",
+      "Ritualistic Interaction: Animations should feel deliberate and weighted, not instant.",
+      "Lighting: Use shadows and glows to simulate candlelight or moonbeams."
+    ]
+  },
+  "typography": {
+    "headings": {
+      "font_family": "Poppins, serif",
+      "weights": ["700", "900"],
+      "usage": "Page titles, Card names, Major arcana highlights",
+      "fallback": "serif"
+    },
+    "subheadings": {
+      "font_family": "Cormorant Garamond, serif",
+      "weights": ["600", "700"],
+      "usage": "Section headers, Spread positions",
+      "tracking": "wide"
+    },
+    "body": {
+      "font_family": "Crimson Text, serif",
+      "weights": ["400", "400italic", "600"],
+      "usage": "Interpretations, User inputs, Descriptions",
+      "line_height": "relaxed"
+    },
+    "ui_elements": {
+      "font_family": "Lato, sans-serif",
+      "weights": ["400", "700"],
+      "usage": "Buttons, Tooltips, Small labels (strictly limited use for legibility)",
+      "tracking": "widest",
+      "transform": "uppercase"
+    }
+  },
+  "color_palette": {
+    "theme_strategy": "Dual-State Mysticism (Parchment Day / Velvet Night)",
+    "common": {
+      "gold": {
+        "base": "#C5A059",
+        "shimmer": "#E5C585",
+        "antique": "#8A6D3B"
+      },
+      "blood": {
+        "dried": "#722F37",
+        "fresh": "#9E1B32"
+      },
+      "ink": {
+        "black": "#1A1A1A",
+        "faded": "#36454F"
+      }
+    },
+    "modes": {
+      "light": {
+        "background": "#F0EAD6", 
+        "surface": "#E8DEC5",
+        "text": "#2A2A2A",
+        "border": "#D4AF37",
+        "overlay": "rgba(240, 234, 214, 0.9)"
+      },
+      "dark": {
+        "background": "#0F0B15",
+        "surface": "#1A1625",
+        "text": "#E0D6C8",
+        "border": "#5D4C75",
+        "overlay": "rgba(15, 11, 21, 0.9)"
+      }
+    }
+  },
+  "visual_assets": {
+    "textures": {
+      "paper_overlay": "https://images.unsplash.com/photo-1706271952285-01b5e3fc2d78?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NjZ8MHwxfHNlYXJjaHwxfHxhZ2VkJTIwcGFwZXIlMjBwYXJjaG1lbnQlMjB0ZXh0dXJlJTIwaGlnaCUyMHJlc29sdXRpb258ZW58MHx8fHwxNzY5ODMzODM4fDA&ixlib=rb-4.1.0&q=85",
+      "card_back_pattern": "https://images.unsplash.com/photo-1739475981422-95aea37df49e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxteXN0aWNhbCUyMHRhcm90JTIwY2FyZCUyMGJhY2slMjBkZXNpZ24lMjBwYXR0ZXJufGVufDB8fHx8MTc2OTgzMzg0MHww&ixlib=rb-4.1.0&q=85"
+    },
+    "icons": {
+      "library": "Lucide React (Default)",
+      "special": "Use 'Gi' (Game Icons) from 'react-icons/gi' for occult symbols (GiPentagram, GiCrystalBall, GiTarotCard)"
+    }
+  },
+  "component_specifications": {
+    "buttons": {
+      "primary": "bg-gold-base text-ink-black font-ui uppercase tracking-widest px-8 py-3 border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-[0_4px_14px_rgba(0,0,0,0.2)]",
+      "secondary": "bg-transparent text-ink-black border border-ink-faded font-ui uppercase tracking-widest px-6 py-2 hover:border-gold-base hover:text-gold-antique"
+    },
+    "cards": {
+      "container": "bg-surface/50 backdrop-blur-sm border border-gold-antique/30 p-6 rounded-sm shadow-lg",
+      "tarot_card": "aspect-[2/3] rounded-lg border-4 border-white/10 shadow-2xl relative preserve-3d cursor-pointer hover:scale-105 transition-transform duration-500"
+    },
+    "inputs": {
+      "petition": "bg-transparent border-b-2 border-ink-faded/30 text-xl font-body italic text-center focus:border-gold-base focus:outline-none placeholder:text-ink-faded/50 py-4 w-full"
+    }
+  },
+  "layout_strategies": {
+    "grid_system": "Use a flexible Bento Grid for the dashboard/history. For the Tarot Spread, use a fixed, centered layout (Celtic Cross or 3-Card row).",
+    "spacing": "Generous. Use 'py-20' or 'py-32' for sections. The content needs to breathe.",
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+  },
+  "animations": {
+    "card_flip": "RotateY 180deg. Duration 0.8s. Ease: [0.23, 1, 0.32, 1] (Cubic Bezier for weight).",
+    "fade_in": "Opacity 0 to 1, Y +20px to 0. Stagger children by 0.1s.",
+    "hover_glow": "Box-shadow bloom effect on hover."
+  },
+  "universal_guidelines": [
+    "Do NOT use standard Shadcn cards without heavy customization (remove white bg, add texture).",
+    "Avoid 'Inter' font everywhere. It breaks immersion.",
+    "Ensure text contrast meets WCAG AA, especially on textured backgrounds.",
+    "All interactive elements MUST have data-testid attributes.",
+    "Use 'sonner' for toasts, styled to look like parchment notes."
+  ],
+  "instructions_to_main_agent": [
+    "1. INSTALL FONTS: Add @import for Cinzel Decorative, Cormorant Garamond, and Crimson Text in index.css immediately.",
+    "2. SETUP TAILWIND: Extend the theme with the colors provided in 'color_palette'. Add a 'texture' utility class for the paper overlay.",
+    "3. COMPONENT OVERRIDE: Modify Shadcn components to use the 'antique' aesthetic. No rounded-xl defaults. Use rounded-sm or rounded-md.",
+    "4. ANIMATION: Install 'framer-motion' if not present. It is required for the card flip.",
+    "5. TEXTURE: Create a global CSS class '.bg-texture' that applies the parchment image as a fixed overlay with 'mix-blend-mode: multiply' and low opacity."
+  ]
+}
