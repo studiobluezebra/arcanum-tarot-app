@@ -280,54 +280,87 @@ const ReadingResult = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="border-t border-[#3D3D3D] pt-12 mb-16"
           >
-            <div className="text-center mb-8">
+            <div className="text-center mb-10">
               <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
                 Decision Insight
               </h2>
             </div>
-            <p
-              className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed text-center max-w-3xl mx-auto"
-              data-testid="reading-interpretation"
-            >
-              {synthesis}
-            </p>
+            
+            {/* Structured Decision Insight Layout */}
+            <div className="max-w-3xl mx-auto">
+              {/* Parse synthesis into structured parts if possible */}
+              {(() => {
+                const text = synthesis;
+                const parts = {
+                  pattern: '',
+                  tension: '',
+                  approach: '',
+                  nextStep: ''
+                };
+                
+                // Try to extract structured parts
+                const patternMatch = text.match(/pattern[:\s]*(.+?)(?=tension|$)/i);
+                const tensionMatch = text.match(/tension[:\s]*(.+?)(?=approach|$)/i);
+                const approachMatch = text.match(/approach[:\s]*(.+?)(?=next\s*step|$)/i);
+                const nextStepMatch = text.match(/next\s*step[:\s]*(.+?)$/i);
+                
+                if (patternMatch || tensionMatch || approachMatch || nextStepMatch) {
+                  parts.pattern = patternMatch ? patternMatch[1].trim() : '';
+                  parts.tension = tensionMatch ? tensionMatch[1].trim() : '';
+                  parts.approach = approachMatch ? approachMatch[1].trim() : '';
+                  parts.nextStep = nextStepMatch ? nextStepMatch[1].trim() : '';
+                  
+                  return (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {parts.pattern && (
+                        <div className="bg-[#1E1E1E] border border-[#3D3D3D] p-6 rounded-lg">
+                          <div className="text-[#D4AF37] font-ui text-xs uppercase tracking-widest mb-3">Pattern</div>
+                          <p className="font-reading text-base text-[#E8DCC8] leading-relaxed">{parts.pattern}</p>
+                        </div>
+                      )}
+                      {parts.tension && (
+                        <div className="bg-[#1E1E1E] border border-[#3D3D3D] p-6 rounded-lg">
+                          <div className="text-[#D4AF37] font-ui text-xs uppercase tracking-widest mb-3">Tension</div>
+                          <p className="font-reading text-base text-[#E8DCC8] leading-relaxed">{parts.tension}</p>
+                        </div>
+                      )}
+                      {parts.approach && (
+                        <div className="bg-[#1E1E1E] border border-[#3D3D3D] p-6 rounded-lg">
+                          <div className="text-[#D4AF37] font-ui text-xs uppercase tracking-widest mb-3">Approach</div>
+                          <p className="font-reading text-base text-[#E8DCC8] leading-relaxed">{parts.approach}</p>
+                        </div>
+                      )}
+                      {parts.nextStep && (
+                        <div className="bg-[#1E1E1E] border border-[#D4AF37]/50 p-6 rounded-lg">
+                          <div className="text-[#D4AF37] font-ui text-xs uppercase tracking-widest mb-3">Next Step</div>
+                          <p className="font-reading text-base text-[#E8DCC8] leading-relaxed">{parts.nextStep}</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                
+                // Fallback: display as formatted text
+                return (
+                  <div className="bg-[#1E1E1E] border border-[#3D3D3D] p-8 rounded-lg">
+                    <p
+                      className="font-reading text-base sm:text-lg text-[#E8DCC8] leading-relaxed"
+                      data-testid="reading-interpretation"
+                    >
+                      {synthesis}
+                    </p>
+                  </div>
+                );
+              })()}
+            </div>
           </motion.div>
         )}
-
-        {/* Reflect Before Deciding */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1 }}
-          className="border-t border-[#3D3D3D] pt-12 mb-16"
-        >
-          <div className="text-center mb-8">
-            <h2 className="font-heading text-xl sm:text-2xl text-[#D4AF37] tracking-widest uppercase">
-              Reflect Before Deciding
-            </h2>
-          </div>
-          <div className="max-w-2xl mx-auto space-y-4">
-            {decisionPrompts.slice(0, 3).map((question, index) => (
-              <div 
-                key={index}
-                className="bg-[#1E1E1E] border border-[#3D3D3D] p-4 rounded-lg"
-              >
-                <p className="font-reading text-base text-[#E8DCC8]">
-                  {question}
-                </p>
-              </div>
-            ))}
-            <p className="font-reading text-sm text-[#8B8B8B] text-center mt-6 italic">
-              This creates decision momentum.
-            </p>
-          </div>
-        </motion.div>
 
         {/* Your Next Step */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.1 }}
+          transition={{ duration: 0.8, delay: 1 }}
           className="border-t border-[#3D3D3D] pt-12 mb-12"
         >
           <div className="text-center mb-8">
