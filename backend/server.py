@@ -11,6 +11,7 @@ import uuid
 from datetime import datetime, timezone
 import random
 from emergentintegrations.llm.chat import LlmChat, UserMessage
+from card_data import CARD_TEMPLATES, get_card_template, get_lens_keyword, get_core_dynamic, get_decision_prompts, get_situation_highlights
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -122,7 +123,7 @@ DECK_THEMES = {
     "anime": {
         "name": "Anime", 
         "description": "Vibrant expressive art for modern questions",
-        "available": False
+        "available": True
     },
     "alchemy": {
         "name": "Alchemy",
@@ -143,8 +144,8 @@ DECK_THEMES = {
 
 # Cards with custom artwork in each deck
 DECK_CARDS = {
-    "original": ["m00", "m01", "m02", "m03", "m04", "m05", "m06", "m07", "m08", "m09", "m10", "m11", "m12", "m13", "m14", "m15", "m16", "m17", "m18", "m19", "m20", "m21", "c01", "c02", "c03", "c04", "c05", "c06", "c07", "c08", "c09", "c10", "c11", "c12", "c13", "c14"],
-    "anime": [],
+    "original": ["m00", "m01", "m02", "m03", "m04", "m05", "m06", "m07", "m08", "m09", "m10", "m11", "m12", "m13", "m14", "m15", "m16", "m17", "m18", "m19", "m20", "m21", "c01", "c02", "c03", "c04", "c05", "c06", "c07", "c08", "c09", "c10", "c11", "c12", "c13", "c14", "w01", "w02", "w03", "w04", "w05", "w06", "w07", "w08", "w09", "w10", "w11", "w12", "w13", "w14", "s01", "s02", "s03", "s04", "s05", "s06", "s07", "s08", "s09", "s10", "s11", "s12", "s13", "s14", "p01", "p02", "p03", "p04", "p05", "p06", "p07", "p08", "p09", "p10", "p11", "p12", "p13", "p14"],
+    "anime": ["m00", "m01", "m02", "m03", "m04", "m05", "m06", "m07", "m08", "m09", "m10", "m11", "m12", "m13", "m14", "m15", "m16", "m17", "m18", "m19", "m20", "m21"],
     "alchemy": [],
     "midnight": [],
     "ethereal": []
@@ -274,36 +275,85 @@ async def get_interpretation(request: InterpretRequest):
         chat = LlmChat(
             api_key=llm_key,
             session_id=str(uuid.uuid4()),
-            system_message="You are a knowledgeable tarot reader who provides clear, psychologically grounded interpretations. Balance traditional tarot meanings with practical psychological insights. Be empathetic, insightful, and help the querent reflect on their situation."
+            system_message="You are a decision clarity advisor who helps people see patterns in their situations. Write in plain text without any markdown formatting (no #, *, _, or other symbols). Focus on pattern recognition and decision framing, not predictions or advice. Be concise and practical."
         )
         chat.with_model("openai", "gpt-5.2")
         
+        # Build rich card information using templates
         cards_info = []
+        card_keywords = []
+        all_decision_prompts = []
+        
+        positions_map = {
+            "Past": "Influencing Forces",
+            "Present": "Current Mindset", 
+            "Future": "Emerging Direction"
+        }
+        
         for drawn in request.cards:
             card = drawn.card
-            meaning = card.upright_meaning
-            position_text = f" (Position: {drawn.position})" if drawn.position else ""
-            cards_info.append(f"{card.name}{position_text}: {meaning}")
+            card_id = card.id
+            template = get_card_template(card_id)
+            
+            new_position = positions_map.get(drawn.position, drawn.position)
+            lens = template.get("lens_keyword", "")
+            core_dynamic = template.get("core_dynamic", card.upright_meaning)
+            situation_highlights = template.get("situation_highlight", [])
+            
+            card_keywords.append(f"{lens} ({card.name})")
+            
+            # Collect decision prompts from each card
+            prompts = template.get("decision_prompts", [])
+            if prompts:
+                all_decision_prompts.extend(prompts[:2])  # Take top 2 from each card
+            
+            # Build rich card info
+            highlights_text = ", ".join(situation_highlights[:2]) if situation_highlights else ""
+            cards_info.append(f"{card.name} ({new_position}):\n  Lens: {lens}\n  Core: {core_dynamic}\n  Situation: {highlights_text}")
         
-        cards_text = "\n".join(cards_info)
-        question_text = f"Question: {request.question}\n\n" if request.question else ""
-        spread_text = f"Spread Type: {request.spread_type}\n\n" if request.spread_type else ""
+        cards_text = "\n\n".join(cards_info)
+        keywords_text = " + ".join(card_keywords)
+        question_text = f"Situation: {request.question}\n\n" if request.question else ""
         
-        prompt = f"""{spread_text}{question_text}Cards drawn:
+        prompt = f"""{question_text}Cards drawn with their Flipwill templates:
+
 {cards_text}
 
-Provide a comprehensive, psychologically grounded interpretation of this reading. Focus on:
-1. The overall message and theme
-2. How the cards relate to each other  
-3. Practical insights for taking action
-4. Balanced perspective (neither overly positive nor negative)
+Pattern: {keywords_text}
 
-IMPORTANT: Keep paragraphs well-spaced and easy to read. Use clear section breaks between different aspects of the reading. Do NOT include any "Reflect Before Deciding" sections or numbered reflection questions. Focus on direct, actionable insights."""
+Provide a decision-focused interpretation following this exact structure. Use plain text only (no markdown, no #, *, or special symbols):
+
+Influencing Forces: Write 2-3 sentences about what shaped this situation, using the lens keyword and core dynamic of the first card as guidance.
+
+Current Mindset: Write 2-3 sentences about what is active now, using the lens keyword and core dynamic of the second card as guidance.
+
+Emerging Direction: Write 2-3 sentences about what may develop if nothing changes, using the lens keyword and core dynamic of the third card as guidance.
+
+Decision Insight: Write this section with this exact structure:
+- Pattern: One sentence identifying what pattern connects the cards, using their lens keywords ({keywords_text}).
+- Tension: One sentence about what tension or dynamic exists between these elements.
+- Approach: One sentence suggesting a practical approach without being prescriptive.
+- Next Step: One concrete, small action to take within 48 hours.
+
+Keep your tone neutral, observational, and focused on helping them see their situation clearly. No fortune-telling or predictions."""
         
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
         
-        return {"interpretation": response}
+        # Return interpretation plus card metadata for frontend
+        return {
+            "interpretation": response,
+            "card_metadata": [
+                {
+                    "card_id": drawn.card.id,
+                    "lens_keyword": get_lens_keyword(drawn.card.id),
+                    "core_dynamic": get_core_dynamic(drawn.card.id),
+                    "decision_prompts": get_decision_prompts(drawn.card.id)[:3],
+                    "situation_highlights": get_situation_highlights(drawn.card.id)[:2]
+                }
+                for drawn in request.cards
+            ]
+        }
     
     except Exception as e:
         logging.error(f"Error getting interpretation: {str(e)}")
@@ -325,24 +375,14 @@ async def get_readings():
     return readings
 
 @api_router.get("/daily-card")
-async def get_daily_card(user_id: Optional[str] = None):
-    """Get daily card - unique per user based on user_id"""
+async def get_daily_card():
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
-    # If no user_id provided, generate a random one (for backwards compatibility)
-    if not user_id:
-        user_id = str(uuid.uuid4())
-    
-    # Check if this user already has a daily card for today
-    existing = await db.daily_cards.find_one({"date": today, "user_id": user_id}, {"_id": 0})
+    existing = await db.daily_cards.find_one({"date": today}, {"_id": 0})
     if existing:
         return existing
     
-    # Use user_id + date as seed for consistent but unique card per user per day
-    seed = hash(f"{user_id}-{today}")
-    random.seed(seed)
     card = random.choice(TAROT_CARDS)
-    random.seed()  # Reset to random state
     
     try:
         llm_key = os.environ.get('EMERGENT_LLM_KEY')
@@ -365,7 +405,6 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         
         daily_card = {
             "date": today,
-            "user_id": user_id,
             "card": {**card, "reversed": False},
             "interpretation": interpretation
         }
@@ -380,7 +419,6 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         logging.error(f"Error generating daily card: {str(e)}")
         return {
             "date": today,
-            "user_id": user_id,
             "card": {**card, "reversed": False},
             "interpretation": f"Today's card is {card['name']}. {meaning}"
         }

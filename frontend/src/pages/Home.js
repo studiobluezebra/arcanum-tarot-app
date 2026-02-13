@@ -3,30 +3,18 @@ import { useNavigate } from 'react-router';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import TarotCard from '../components/TarotCard';
-import { GiCrystalBall } from 'react-icons/gi';
+import { useDeck } from '../context/DeckContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const Home = () => {
   const navigate = useNavigate();
+  const { selectedDeck } = useDeck();
   const [dailyCard, setDailyCard] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Get or create a persistent user ID for unique daily cards
-  const getUserId = () => {
-    let userId = localStorage.getItem('flipwill_user_id');
-    if (!userId) {
-      userId = crypto.randomUUID ? crypto.randomUUID() : 
-        'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          const r = Math.random() * 16 | 0;
-          const v = c === 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
-      localStorage.setItem('flipwill_user_id', userId);
-    }
-    return userId;
-  };
+  const [feedbackGiven, setFeedbackGiven] = useState(false);
+  const [showSaved, setShowSaved] = useState(false);
 
   useEffect(() => {
     fetchDailyCard();
@@ -34,8 +22,7 @@ const Home = () => {
 
   const fetchDailyCard = async () => {
     try {
-      const userId = getUserId();
-      const response = await axios.get(`${API}/daily-card?user_id=${userId}`);
+      const response = await axios.get(`${API}/daily-card`);
       setDailyCard(response.data);
     } catch (error) {
       console.error('Error fetching daily card:', error);
@@ -44,22 +31,31 @@ const Home = () => {
     }
   };
 
+  const handleFeedback = (response) => {
+    setFeedbackGiven(true);
+    setShowSaved(true);
+    // Could save to backend in the future
+    setTimeout(() => setShowSaved(false), 2000);
+  };
+
+  // Get card image path based on selected deck
+  const getCardImagePath = (card) => {
+    if (!card) return '';
+    const deckFolder = selectedDeck || 'original';
+    return `/cards/${deckFolder}/${card.id}.png`;
+  };
+
   return (
-    <div className="min-h-screen py-12 sm:py-20" data-testid="home-page">
+    <div className="min-h-screen py-12 sm:py-20 bg-celestial-dark" data-testid="home-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <GiCrystalBall className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 text-gold-base" />
-          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-ink-black mb-4">
-            The Arcanum
-          </h1>
-          <p className="font-body text-lg sm:text-xl text-ink-faded max-w-2xl mx-auto leading-relaxed">
-            Unlock the wisdom of the tarot. Seek guidance through the ancient art of divination,
-            where psychology meets mysticism.
+          <p className="font-body text-lg sm:text-xl text-celestial-text max-w-2xl mx-auto leading-relaxed italic">
+            Clarity begins with awareness
           </p>
         </motion.div>
 
@@ -69,30 +65,90 @@ const Home = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="mb-16"
         >
-          <div className="ornate-border bg-parchment-surface/50 backdrop-blur-sm p-8 sm:p-12 rounded-sm shadow-2xl max-w-3xl mx-auto">
-            <h2 className="font-subheading text-2xl sm:text-3xl text-center text-ink-black mb-8 tracking-wide">
-              Your Daily Card
+          <div className="bg-celestial-card border border-gold-base/30 p-6 sm:p-10 rounded-lg shadow-2xl max-w-3xl mx-auto">
+            <h2 className="font-subheading text-3xl sm:text-4xl text-center text-gold-base mb-2 tracking-wide">
+              Your daily Perspective
             </h2>
+            <p className="font-body text-base sm:text-lg text-center text-celestial-muted mb-8">
+              A lens for today
+            </p>
             
             {loading ? (
               <div className="text-center py-12" data-testid="daily-card-loading">
-                <div className="font-body text-ink-faded">Drawing your daily card...</div>
+                <div className="font-reading text-celestial-muted">Drawing your daily card...</div>
               </div>
             ) : dailyCard ? (
-              <div className="flex flex-col items-center gap-6" data-testid="daily-card-display">
-                <TarotCard
-                  card={dailyCard.card}
-                  reversed={dailyCard.card.reversed}
-                  isRevealed={true}
-                  size="large"
-                />
-                <div className="font-body text-base sm:text-lg text-center text-ink-black leading-relaxed max-w-xl">
+              <div className="flex flex-col items-center gap-4" data-testid="daily-card-display">
+                {/* Card Image - Larger */}
+                <div className="w-56 sm:w-72 md:w-80">
+                  <img 
+                    src={getCardImagePath(dailyCard.card)} 
+                    alt={dailyCard.card.name}
+                    className={`w-full h-auto rounded-lg shadow-xl ${dailyCard.card.reversed ? 'rotate-180' : ''}`}
+                  />
+                </div>
+                
+                {/* Card Name */}
+                <h3 className="font-subheading text-2xl sm:text-3xl text-gold-base text-center mt-2">
+                  {dailyCard.card.name}
+                  {dailyCard.card.reversed && <span className="text-celestial-muted text-lg ml-2">(Reversed)</span>}
+                </h3>
+                
+                {/* Disclaimer line */}
+                <p className="font-body text-sm text-celestial-muted italic mt-4">
+                  this is not a prediction - just a perspective to explore
+                </p>
+                
+                {/* Interpretation */}
+                <div className="font-reading text-base sm:text-lg text-center text-[#E8DCC8] leading-relaxed max-w-xl mt-4">
                   {dailyCard.interpretation}
+                </div>
+
+                {/* Feedback Section */}
+                <div className="mt-8 pt-6 border-t border-celestial-border w-full max-w-md">
+                  <p className="font-body text-sm text-celestial-muted text-center mb-4">
+                    did this perspective show up today?
+                  </p>
+                  
+                  {!feedbackGiven ? (
+                    <div className="flex justify-center gap-3" data-testid="feedback-buttons">
+                      <button
+                        onClick={() => handleFeedback('yes')}
+                        data-testid="feedback-yes-btn"
+                        className="px-6 py-2 border border-gold-base/50 text-gold-base font-ui text-sm uppercase tracking-wider hover:bg-gold-base/10 transition-all duration-300 rounded"
+                      >
+                        yes
+                      </button>
+                      <button
+                        onClick={() => handleFeedback('not_really')}
+                        data-testid="feedback-not-really-btn"
+                        className="px-6 py-2 border border-celestial-border text-celestial-muted font-ui text-sm uppercase tracking-wider hover:border-gold-base/30 hover:text-celestial-text transition-all duration-300 rounded"
+                      >
+                        not really
+                      </button>
+                      <button
+                        onClick={() => handleFeedback('no')}
+                        data-testid="feedback-no-btn"
+                        className="px-6 py-2 border border-celestial-border text-celestial-muted font-ui text-sm uppercase tracking-wider hover:border-gold-base/30 hover:text-celestial-text transition-all duration-300 rounded"
+                      >
+                        no
+                      </button>
+                    </div>
+                  ) : (
+                    <motion.p 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="font-body text-sm text-gold-base text-center"
+                      data-testid="feedback-saved"
+                    >
+                      {showSaved ? 'saved' : 'thank you for your feedback'}
+                    </motion.p>
+                  )}
                 </div>
               </div>
             ) : (
               <div className="text-center py-12" data-testid="daily-card-error">
-                <div className="font-body text-blood-dried">Unable to draw daily card. Please try again later.</div>
+                <div className="font-reading text-red-400">Unable to draw daily card. Please try again later.</div>
               </div>
             )}
           </div>
@@ -104,17 +160,17 @@ const Home = () => {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-center"
         >
-          <div className="bg-parchment-surface/30 backdrop-blur-sm border border-gold-antique/30 p-8 rounded-sm hover:shadow-xl transition-shadow duration-300 max-w-2xl mx-auto">
-            <h3 className="font-subheading text-2xl text-ink-black mb-3 tracking-wide">Three Card Reading</h3>
-            <p className="font-body text-base text-ink-faded mb-6 leading-relaxed">
-              Explore past, present, and future to understand your journey. Ask your question and receive guidance.
+          <div className="bg-celestial-card border border-celestial-border p-8 rounded-lg hover:border-gold-base/50 transition-all duration-300 max-w-2xl mx-auto">
+            <h3 className="font-subheading text-2xl text-celestial-text mb-3 tracking-wide">Explore a decision</h3>
+            <p className="font-body text-base text-celestial-muted mb-6 leading-relaxed">
+              Get clarity on a situation that matters to you
             </p>
             <button
               onClick={() => navigate('/draw')}
               data-testid="start-reading-btn"
-              className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-10 py-4 text-lg border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-lg w-full"
+              className="bg-gold-base text-celestial-dark font-ui uppercase tracking-widest px-10 py-4 text-lg hover:bg-gold-shimmer transition-all duration-300 w-full"
             >
-              Begin Your Reading
+              start a decision
             </button>
           </div>
         </motion.div>

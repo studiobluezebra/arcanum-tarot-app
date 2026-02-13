@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import TarotCard from '../components/TarotCard';
@@ -9,11 +9,19 @@ const API = `${BACKEND_URL}/api`;
 
 const DrawCard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [question, setQuestion] = useState('');
   const [drawnCards, setDrawnCards] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isInterpreting, setIsInterpreting] = useState(false);
   const [revealed, setRevealed] = useState(false);
+
+  // Pre-fill question from Go Deeper section
+  useEffect(() => {
+    if (location.state?.prefillQuestion) {
+      setQuestion(location.state.prefillQuestion);
+    }
+  }, [location.state]);
 
   const handleDraw = async () => {
     if (!question.trim()) {
@@ -55,6 +63,7 @@ const DrawCard = () => {
         question: question,
         spread_type: 'three-card',
         interpretation: response.data.interpretation,
+        card_metadata: response.data.card_metadata || [],
       };
 
       await axios.post(`${API}/readings`, reading);
@@ -69,7 +78,7 @@ const DrawCard = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 sm:py-20" data-testid="draw-card-page">
+    <div className="min-h-screen py-12 sm:py-20 bg-celestial-dark" data-testid="draw-card-page">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -77,9 +86,9 @@ const DrawCard = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h1 className="font-heading text-4xl sm:text-5xl text-ink-black mb-4">Three Card Reading</h1>
-          <p className="font-body text-base sm:text-lg text-ink-faded max-w-2xl mx-auto">
-            Past, Present, and Future. Focus on your question, clear your mind, and let the cards guide you.
+          <h1 className="font-heading text-4xl sm:text-5xl text-gold-base mb-4">Explore a Decision</h1>
+          <p className="font-body text-base sm:text-lg text-celestial-text max-w-2xl mx-auto">
+            Focus on a situation where you want clarity. The cards will offer perspectives to help you think differently.
           </p>
         </motion.div>
 
@@ -89,19 +98,36 @@ const DrawCard = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-3xl mx-auto mb-12"
         >
-          <div className="ornate-border bg-parchment-surface/50 backdrop-blur-sm p-8 rounded-sm shadow-lg">
-            <label className="font-subheading text-lg text-ink-black mb-4 block text-center">
-              What guidance do you seek?
+          <div className="bg-celestial-card border border-celestial-border p-8 rounded-lg shadow-lg">
+            <label className="font-subheading text-lg text-celestial-text mb-4 block text-center">
+              What do you want clarity on?
             </label>
             <input
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Ask your question..."
+              placeholder="Example: Should I take this opportunity? What is influencing this situation? What should I pay attention to?"
               data-testid="question-input"
-              className="petition-input w-full"
+              className="w-full px-6 py-4 bg-celestial-dark border border-celestial-border rounded-lg font-body text-lg text-celestial-text placeholder-celestial-muted focus:outline-none focus:border-gold-base transition-colors mb-6"
               disabled={drawnCards.length > 0}
             />
+            
+            {/* Question Guidance */}
+            <div className="border-t border-celestial-border pt-6">
+              <p className="font-reading text-sm text-[#8B8B8B] text-center mb-4">
+                How to get the most insight
+              </p>
+              <div className="font-reading text-sm text-[#E8DCC8] space-y-2">
+                <p className="flex items-start gap-2">
+                  <span className="text-[#D4AF37]">✦</span>
+                  <span>Describe the situation you want clarity on.</span>
+                </p>
+                <p className="flex items-start gap-2">
+                  <span className="text-[#D4AF37]">✦</span>
+                  <span>Be open — the goal is perspective, not prediction.</span>
+                </p>
+              </div>
+            </div>
           </div>
         </motion.div>
 
@@ -116,9 +142,9 @@ const DrawCard = () => {
               onClick={handleDraw}
               disabled={isDrawing || !question.trim()}
               data-testid="draw-cards-btn"
-              className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-12 py-4 text-lg border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-gold-base text-celestial-dark font-ui uppercase tracking-widest px-12 py-4 text-lg hover:bg-gold-shimmer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isDrawing ? 'Drawing Cards...' : 'Draw Three Cards'}
+              {isDrawing ? 'Drawing Cards...' : 'Reveal Perspectives'}
             </button>
           </motion.div>
         ) : (
@@ -129,20 +155,25 @@ const DrawCard = () => {
             className="space-y-8"
             data-testid="drawn-cards-display"
           >
-            <div className="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-8 max-w-6xl mx-auto">
               {drawnCards.map((drawn, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="flex flex-col items-center"
                 >
+                  {/* Card Name Title - always shown after drawing */}
+                  <h3 className="font-heading text-xl sm:text-2xl text-[#D4AF37] mb-4 text-center">
+                    {drawn.card.name}
+                  </h3>
                   <TarotCard
                     card={drawn.card}
                     reversed={drawn.reversed}
                     position={drawn.position}
                     isRevealed={revealed}
-                    size="medium"
+                    size="large"
                   />
                 </motion.div>
               ))}
@@ -153,7 +184,7 @@ const DrawCard = () => {
                 <button
                   onClick={handleReveal}
                   data-testid="reveal-cards-btn"
-                  className="wax-seal-btn bg-gold-base text-ink-black font-ui uppercase tracking-widest px-8 py-3 border-2 border-double border-ink-black hover:bg-gold-shimmer transition-all duration-300 shadow-lg"
+                  className="bg-gold-base text-celestial-dark font-ui uppercase tracking-widest px-8 py-3 hover:bg-gold-shimmer transition-all duration-300"
                 >
                   Reveal Cards
                 </button>
@@ -163,7 +194,7 @@ const DrawCard = () => {
                   onClick={handleInterpret}
                   disabled={isInterpreting}
                   data-testid="get-interpretation-btn"
-                  className="wax-seal-btn bg-blood-dried text-parchment-light font-ui uppercase tracking-widest px-8 py-3 border-2 border-double border-ink-black hover:bg-blood-fresh transition-all duration-300 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="bg-position-past text-white font-ui uppercase tracking-widest px-8 py-3 hover:brightness-110 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isInterpreting ? 'Interpreting...' : 'Get Interpretation'}
                 </button>
@@ -175,7 +206,7 @@ const DrawCard = () => {
                   setQuestion('');
                 }}
                 data-testid="draw-again-btn"
-                className="bg-transparent text-ink-faded border border-ink-faded font-ui uppercase tracking-widest px-8 py-3 hover:border-gold-base hover:text-gold-antique transition-all duration-300"
+                className="bg-transparent text-celestial-muted border border-celestial-border font-ui uppercase tracking-widest px-8 py-3 hover:border-gold-base hover:text-gold-base transition-all duration-300"
               >
                 Ask Another Question
               </button>

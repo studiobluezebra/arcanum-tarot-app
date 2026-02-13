@@ -13,7 +13,8 @@ const TarotCard = ({ card, reversed = false, position, onClick, isRevealed = fal
   const sizeClasses = {
     small: 'w-24 h-36',
     medium: 'w-40 h-60',
-    large: 'w-48 h-72',
+    large: 'w-52 h-[312px]',
+    xlarge: 'w-64 h-[384px]',
   };
 
   const handleClick = () => {
