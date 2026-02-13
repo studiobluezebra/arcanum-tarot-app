@@ -294,11 +294,11 @@ async def get_interpretation(request: InterpretRequest):
 
 Provide a comprehensive, psychologically grounded interpretation of this reading. Focus on:
 1. The overall message and theme
-2. How the cards relate to each other
-3. Practical insights and reflection questions
+2. How the cards relate to each other  
+3. Practical insights for taking action
 4. Balanced perspective (neither overly positive nor negative)
 
-Keep the interpretation clear, insightful, and helpful for both beginners and experienced tarot users."""
+IMPORTANT: Keep paragraphs well-spaced and easy to read. Use clear section breaks between different aspects of the reading. Do NOT include any "Reflect Before Deciding" sections or numbered reflection questions. Focus on direct, actionable insights."""
         
         user_message = UserMessage(text=prompt)
         response = await chat.send_message(user_message)
@@ -325,14 +325,24 @@ async def get_readings():
     return readings
 
 @api_router.get("/daily-card")
-async def get_daily_card():
+async def get_daily_card(user_id: Optional[str] = None):
+    """Get daily card - unique per user based on user_id"""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
-    existing = await db.daily_cards.find_one({"date": today}, {"_id": 0})
+    # If no user_id provided, generate a random one (for backwards compatibility)
+    if not user_id:
+        user_id = str(uuid.uuid4())
+    
+    # Check if this user already has a daily card for today
+    existing = await db.daily_cards.find_one({"date": today, "user_id": user_id}, {"_id": 0})
     if existing:
         return existing
     
+    # Use user_id + date as seed for consistent but unique card per user per day
+    seed = hash(f"{user_id}-{today}")
+    random.seed(seed)
     card = random.choice(TAROT_CARDS)
+    random.seed()  # Reset to random state
     
     try:
         llm_key = os.environ.get('EMERGENT_LLM_KEY')
@@ -355,6 +365,7 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         
         daily_card = {
             "date": today,
+            "user_id": user_id,
             "card": {**card, "reversed": False},
             "interpretation": interpretation
         }
@@ -369,6 +380,7 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         logging.error(f"Error generating daily card: {str(e)}")
         return {
             "date": today,
+            "user_id": user_id,
             "card": {**card, "reversed": False},
             "interpretation": f"Today's card is {card['name']}. {meaning}"
         }
