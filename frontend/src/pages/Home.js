@@ -17,15 +17,45 @@ const Home = () => {
   const [showSaved, setShowSaved] = useState(false);
 
   useEffect(() => {
-    fetchDailyCard();
+    fetchPersonalDailyCard();
   }, []);
 
-  const fetchDailyCard = async () => {
+  // Get or generate a personal daily card for this user
+  const fetchPersonalDailyCard = async () => {
     try {
-      const response = await axios.get(`${API}/daily-card`);
+      const today = new Date().toISOString().split('T')[0];
+      const storageKey = `flipwill_daily_card_${today}`;
+      
+      // Check if user already has a daily card for today
+      const storedCard = localStorage.getItem(storageKey);
+      if (storedCard) {
+        setDailyCard(JSON.parse(storedCard));
+        setLoading(false);
+        return;
+      }
+      
+      // Clear old daily cards from localStorage
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('flipwill_daily_card_') && key !== storageKey) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Get a new personal daily card from the API
+      const response = await axios.get(`${API}/personal-daily-card`);
       setDailyCard(response.data);
+      
+      // Store in localStorage for this user's session today
+      localStorage.setItem(storageKey, JSON.stringify(response.data));
     } catch (error) {
       console.error('Error fetching daily card:', error);
+      // Fallback to regular daily card
+      try {
+        const response = await axios.get(`${API}/daily-card`);
+        setDailyCard(response.data);
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+      }
     } finally {
       setLoading(false);
     }
