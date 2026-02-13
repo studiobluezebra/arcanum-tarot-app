@@ -423,6 +423,49 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
             "interpretation": f"Today's card is {card['name']}. {meaning}"
         }
 
+@api_router.get("/personal-daily-card")
+async def get_personal_daily_card():
+    """Generate a unique daily card for each user (not cached globally)"""
+    card = random.choice(TAROT_CARDS)
+    template = get_card_template(card["id"])
+    
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        chat = LlmChat(
+            api_key=llm_key,
+            session_id=str(uuid.uuid4()),
+            system_message="You are a decision clarity advisor. Be concise, practical, and focused on perspective rather than prediction."
+        )
+        chat.with_model("openai", "gpt-5.2")
+        
+        lens = template.get("lens_keyword", "")
+        core_dynamic = template.get("core_dynamic", card["upright_meaning"])
+        
+        prompt = f"""Daily Card: {card['name']}
+Lens: {lens}
+Core: {core_dynamic}
+
+Provide a brief daily perspective message (2-3 sentences) about how this card's theme of "{lens}" might show up today. Focus on awareness and decision-making, not prediction."""
+        
+        user_message = UserMessage(text=prompt)
+        interpretation = await chat.send_message(user_message)
+        
+        return {
+            "card": {**card, "reversed": False},
+            "interpretation": interpretation,
+            "lens_keyword": lens,
+            "core_dynamic": core_dynamic
+        }
+    
+    except Exception as e:
+        logging.error(f"Error generating personal daily card: {str(e)}")
+        return {
+            "card": {**card, "reversed": False},
+            "interpretation": f"Today's perspective: {card['name']} - {template.get('core_dynamic', card['upright_meaning'])}",
+            "lens_keyword": template.get("lens_keyword", ""),
+            "core_dynamic": template.get("core_dynamic", "")
+        }
+
 app.include_router(api_router)
 
 app.add_middleware(
