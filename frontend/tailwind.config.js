@@ -88,10 +88,10 @@ module.exports = {
                 },
                 fontFamily: {
                         heading: ['Cinzel Decorative', 'serif'],
-                        subheading: ['Cormorant Garamond', 'serif'],
-                        body: ['Crimson Text', 'serif'],
-                        reading: ['Roboto', 'sans-serif'],
-                        ui: ['Lato', 'sans-serif']
+                        subheading: ['Montserrat', 'sans-serif'],
+                        body: ['Montserrat', 'sans-serif'],
+                        reading: ['Montserrat', 'sans-serif'],
+                        ui: ['Montserrat', 'sans-serif']
                 },
                 keyframes: {
                         'accordion-down': {
