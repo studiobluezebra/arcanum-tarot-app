@@ -1,13 +1,16 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router';
 import { DeckProvider } from './context/DeckContext';
+import { PremiumProvider } from './context/PremiumContext';
 import Welcome from './pages/Welcome';
 import Home from './pages/Home';
 import DrawCard from './pages/DrawCard';
 import ReadingResult from './pages/ReadingResult';
 import History from './pages/History';
 import CardLibrary from './pages/CardLibrary';
+import Upgrade from './pages/Upgrade';
 import Navigation from './components/Navigation';
+import PaywallModal from './components/PaywallModal';
 import './App.css';
 
 // Wrapper to conditionally show Navigation
@@ -18,6 +21,7 @@ const AppContent = () => {
   return (
     <>
       {!isWelcomePage && <Navigation />}
+      <PaywallModal />
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/home" element={<Home />} />
@@ -25,6 +29,7 @@ const AppContent = () => {
         <Route path="/reading" element={<ReadingResult />} />
         <Route path="/history" element={<History />} />
         <Route path="/library" element={<CardLibrary />} />
+        <Route path="/upgrade" element={<Upgrade />} />
       </Routes>
     </>
   );
@@ -33,11 +38,13 @@ const AppContent = () => {
 function App() {
   return (
     <div className="App bg-texture min-h-screen">
-      <DeckProvider>
-        <BrowserRouter>
-          <AppContent />
-        </BrowserRouter>
-      </DeckProvider>
+      <PremiumProvider>
+        <DeckProvider>
+          <BrowserRouter>
+            <AppContent />
+          </BrowserRouter>
+        </DeckProvider>
+      </PremiumProvider>
     </div>
   );
 }
