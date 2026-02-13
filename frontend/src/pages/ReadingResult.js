@@ -332,8 +332,22 @@ const ReadingResult = () => {
                       )}
                       {parts.nextStep && (
                         <div className="bg-[#1E1E1E] border border-[#D4AF37]/50 p-6 rounded-lg">
-                          <div className="text-[#D4AF37] font-ui text-xs uppercase tracking-widest mb-3">Next Step</div>
-                          <p className="font-reading text-base text-[#E8DCC8] leading-relaxed">{parts.nextStep}</p>
+                          <div className="text-[#D4AF37] font-ui text-xs uppercase tracking-widest mb-3">Try This Now</div>
+                          <p className="font-reading text-base text-[#E8DCC8] leading-relaxed mb-4">Take one small step to reduce uncertainty:</p>
+                          <ul className="space-y-2">
+                            <li className="font-reading text-base text-[#E8DCC8] flex items-start gap-2">
+                              <span className="text-[#D4AF37]">•</span>
+                              <span>Verify one fact</span>
+                            </li>
+                            <li className="font-reading text-base text-[#E8DCC8] flex items-start gap-2">
+                              <span className="text-[#D4AF37]">•</span>
+                              <span>Ask one direct question</span>
+                            </li>
+                            <li className="font-reading text-base text-[#E8DCC8] flex items-start gap-2">
+                              <span className="text-[#D4AF37]">•</span>
+                              <span>Test one option briefly</span>
+                            </li>
+                          </ul>
                         </div>
                       )}
                     </div>
