@@ -375,14 +375,24 @@ async def get_readings():
     return readings
 
 @api_router.get("/daily-card")
-async def get_daily_card():
+async def get_daily_card(user_id: Optional[str] = None):
+    """Get daily card - unique per user based on user_id"""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     
-    existing = await db.daily_cards.find_one({"date": today}, {"_id": 0})
+    # If no user_id provided, generate a random one (for backwards compatibility)
+    if not user_id:
+        user_id = str(uuid.uuid4())
+    
+    # Check if this user already has a daily card for today
+    existing = await db.daily_cards.find_one({"date": today, "user_id": user_id}, {"_id": 0})
     if existing:
         return existing
     
+    # Use user_id + date as seed for consistent but unique card per user per day
+    seed = hash(f"{user_id}-{today}")
+    random.seed(seed)
     card = random.choice(TAROT_CARDS)
+    random.seed()  # Reset to random state
     
     try:
         llm_key = os.environ.get('EMERGENT_LLM_KEY')
@@ -405,6 +415,7 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         
         daily_card = {
             "date": today,
+            "user_id": user_id,
             "card": {**card, "reversed": False},
             "interpretation": interpretation
         }
@@ -419,6 +430,7 @@ Provide a brief, inspiring daily message (2-3 sentences) about how this card's e
         logging.error(f"Error generating daily card: {str(e)}")
         return {
             "date": today,
+            "user_id": user_id,
             "card": {**card, "reversed": False},
             "interpretation": f"Today's card is {card['name']}. {meaning}"
         }
