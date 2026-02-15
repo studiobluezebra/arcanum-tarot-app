@@ -359,6 +359,68 @@ Keep your tone neutral, observational, and focused on helping them see their sit
         logging.error(f"Error getting interpretation: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to generate interpretation: {str(e)}")
 
+class ClarifierRequest(BaseModel):
+    original_question: Optional[str] = None
+    original_cards: List[dict]
+    clarifier_focus: str
+    clarifier_focus_label: str
+    clarifier_card: dict
+
+@api_router.post("/clarifier-interpret")
+async def get_clarifier_interpretation(request: ClarifierRequest):
+    """Generate interpretation for a clarifier card based on original reading context"""
+    try:
+        llm_key = os.environ.get('EMERGENT_LLM_KEY')
+        if not llm_key:
+            raise HTTPException(status_code=500, detail="LLM API key not configured")
+        
+        chat = LlmChat(
+            api_key=llm_key,
+            session_id=str(uuid.uuid4()),
+            system_message="You are a decision clarity advisor. Provide focused, practical insights. Write in plain text without markdown. Be concise but insightful."
+        )
+        chat.with_model("openai", "gpt-5.2")
+        
+        # Build context from original cards
+        original_context = []
+        for card_data in request.original_cards:
+            card = card_data.get('card', card_data)
+            position = card_data.get('position', '')
+            original_context.append(f"{position}: {card.get('name', 'Unknown')}")
+        
+        # Get clarifier card template
+        clarifier_id = request.clarifier_card.get('id', '')
+        template = get_card_template(clarifier_id)
+        lens = template.get("lens_keyword", "")
+        core_dynamic = template.get("core_dynamic", request.clarifier_card.get("upright_meaning", ""))
+        
+        question_text = f"Original situation: {request.original_question}\n\n" if request.original_question else ""
+        
+        prompt = f"""{question_text}Original reading cards: {', '.join(original_context)}
+
+Clarification focus: {request.clarifier_focus_label}
+
+Clarifier card drawn: {request.clarifier_card.get('name', 'Unknown')}
+Lens: {lens}
+Core meaning: {core_dynamic}
+
+Provide a focused clarification (3-4 sentences) that:
+1. Directly addresses the clarification focus question
+2. Connects the clarifier card to the original reading context
+3. Offers a specific insight or perspective
+4. Avoids predictions, focuses on awareness and understanding
+
+Keep the tone practical and decision-focused."""
+
+        user_message = UserMessage(text=prompt)
+        response = await chat.send_message(user_message)
+        
+        return {"interpretation": response}
+    
+    except Exception as e:
+        logging.error(f"Error getting clarifier interpretation: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate clarifier interpretation: {str(e)}")
+
 @api_router.post("/readings", response_model=Reading)
 async def save_reading(reading: Reading):
     doc = reading.model_dump()
