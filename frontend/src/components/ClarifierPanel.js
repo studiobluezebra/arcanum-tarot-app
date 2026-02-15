@@ -47,8 +47,8 @@ const ClarifierPanel = ({
   const handleDrawCard = async () => {
     setIsLoading(true);
     try {
-      // Draw a random card
-      const response = await axios.get(`${API}/draw?count=1`);
+      // Draw a random card (POST request)
+      const response = await axios.post(`${API}/draw`, { count: 1 });
       const card = response.data[0];
       setClarifierCard(card);
       setStep('revealed');
