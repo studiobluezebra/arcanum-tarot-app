@@ -1,150 +1,199 @@
 <analysis>**original_problem_statement:**
-The user wants to build a tarot reading application.
+The user wants to build a tarot reading application, Flipwill, positioned as a decision-support tool.
 
 **PRODUCT REQUIREMENTS:**
--   **AI Engine**: Use OpenAI for interpretations.
--   **Design Theme**: A vintage/occult aesthetic.
--   **Core Features**:
-    -   Daily card feature.
-    -   Ability for users to ask a question.
-    -   A three-card spread (Past, Present, Future). Other spread options like single-card and Celtic Cross were initially built but later removed at the user's request to simplify the app.
-    -   Reading history.
-    -   A library to view all cards.
--   **Card Functionality**:
-    -   No reversed cards; all cards should be displayed upright.
--   **Custom Artwork**:
-    -   The user will provide their own custom artwork for all 78 tarot cards and a card back. The application must be ableto display this custom art. So far, all 22 Major Arcana and the first 9 Cups cards have been provided and integrated. The user has just provided the final 5 Cups cards.
+-   **Core App**: A React frontend and FastAPI backend.
+-   **Theme**: Dark, celestial/vintage aesthetic. The font was recently changed to Montserrat.
+-   **Features**:
+    -   A welcome page.
+    -   A personalized daily card draw that is unique per user (using localStorage).
+    -   A three-card spread (Explore a Decision) for user questions, with redefined positions: Influencing Forces, Current Mindset, and Emerging Direction.
+    -   A structured interpretation engine using custom-defined templates for all 78 tarot cards ().
+    -   A redesigned results page showing card-specific lens keywords (as chips), core dynamics, and situation highlights.
+    -   A Decision Insight section summarizing the reading in a 2x2 grid (Pattern, Tension, Approach, Try This Now).
+    -   A Clarifier feature to let users draw one extra card to get more insight on a specific aspect of their reading, without starting a new one.
+    -   Multi-deck system (currently Original and Anime).
+    -   A card library.
+-   **Monetization (FlipWill+)**:
+    -   A premium subscription model (monthly/yearly) with a 7-day free trial.
+    -   **Free Tier**: 2 readings per day, no history/saving.
+    -   **Premium Tier**: Unlimited readings, reading history, saved reflections, and pattern tracking.
+    -   A paywall is triggered on the 3rd daily reading or when accessing premium features.
+    -   The payment integration is currently mocked, pending the user's choice of a provider available in their country.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A fully functional full-stack web application for tarot reading.
--   **Frontend**: A React application styled with Tailwind CSS, featuring a vintage/occult design. It displays custom card artwork, handles user input for questions, and shows AI-generated interpretations.
--   **Backend**: A Flask server that manages tarot card data, serves API endpoints for drawing cards and getting interpretations from OpenAI, and maintains a non-persistent reading history.
--   **Card Deck**: The app is configured with a full 78-card tarot deck. The user has provided custom artwork for all 22 Major Arcana cards, a custom card back, and the first 9 cards of the Cups suit, all of which are integrated. Cards without custom art have a text-based fallback display.
--   **Features**: The app has been simplified to offer only a 3-card spread with a required question input, as per the user's latest request.
+The application is a full-stack React/FastAPI app. Most of the UI has been revamped with a new font (Montserrat) and a new, more structured decision-support flow. A complete 78-card interpretation engine has been built on the backend () and integrated with the OpenAI prompt. The results page now shows structured data from this engine (chips, core dynamics, situation highlights) and a redesigned Decision Insight grid. A personalized daily card feature using localStorage has been implemented. The foundation for a premium subscription model and a Clarifier feature has been laid out with new components and contexts, but the implementation is incomplete. All 78 Anime deck card images have been downloaded but not yet integrated.
 
 **Last working item**:
--   **Last item agent was working**: The user has just uploaded the final 5 cards for the 'Cups' suit (Ten, Page, Knight, Queen, King of Cups) and stated, lasts cards for cups. It should be complete. The agent's task is to integrate these new images into the application.
+-   **Last item agent was working**: The agent was in the middle of a large, combined implementation of the new Clarifier feature and the premium subscription paywall system. This involved creating new components (, ), a new context (), updating multiple pages (, , , ), and adding a new backend endpoint. The user also requested to add the Anime deck cards, which were downloaded but not yet moved to the correct directory. The agent was interrupted by user confusion regarding platform job names (card-clarity vs flipwill).
 -   **Status**: IN PROGRESS
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: manual testing by curl/python -c. The agent should download the images, update  with the new image paths, restart the server, and then verify the integration by listing files and checking the  endpoint. A final visual check of the in-app library page is also recommended.
+-   **Which testing method agent to use?**: both
 -   **User Testing Done**: N
 
-**In progress Task List**:
+**All Pending/In progress Issue list**:
+-   **Issue 1**: Finish the implementation of the Premium/Paywall and Clarifier features (P0).
+-   **Issue 2**: Integrate the downloaded Anime deck cards (P1).
+-   **Issue 3**: Add text No predictions. Just perspective. under the button on the Welcome page (P3 - This was the very first request from the previous fork, but was immediately superseded by many other changes. Confirm with user if still needed).
 
--   **Task 1**: Complete the integration of the 'Cups' suit (P0)
-    -   **Where to resume**: The user has just uploaded the image files for the last 5 cards of the Cups suit. The agent needs to:
-        1.  Download the new images (Ten, Page, Knight, Queen, King of Cups) into the  directory.
-        2.  Edit  and update the  data structure to include the  paths for these 5 new cards.
-        3.  Restart the backend server to apply the changes.
-        4.  Verify that the integration was successful.
-    -   **What will be achieved with this?**: The 'Cups' suit will be 100% complete with the user's custom artwork, bringing the total custom card count to 36 (out of 78).
+**Issues Detail**:
+-   **Issue 1: Premium/Paywall & Clarifier Implementation**
+    -   **Attempted fixes**: The agent has created several new files (, , , ) and made partial edits to , , , , and . The work is scattered and incomplete.
+    -   **Next debug checklist**:
+        1.  Reassure the user that the card-clarity job name is irrelevant and all their work is safe in this session.
+        2.  Systematically review all the recently created/modified files to understand the current state of the implementation.
+        3.  Complete the logic in  to manage premium state, reading counts, and trial status.
+        4.  Integrate  into .
+        5.  Finish the logic in  to check the reading limit and trigger the .
+        6.  Finish the logic in  to display the reading counter and premium badge.
+        7.  Finish the logic in  to show a locked state for free users.
+        8.  Finish the  component UI and state management.
+        9.  Complete the backend  endpoint in .
+        10. Integrate the  into , including the logic to handle the Reveal the Missing Piece button and show the panel.
+        11. Ensure the premium logic correctly limits clarifier draws for free users.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is the user's main requested feature, combining a major UX improvement (Clarifier) with the app's monetization strategy (Premium).
     -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Both.
-    -   **Blocked on something**: No.
+    -   **Blocked on other issue**: None.
+
+-   **Issue 2: Integrate Anime Deck Cards**
+    -   **Attempted fixes**: The agent successfully downloaded a zip file containing the cards from the user's Google Drive link and unzipped it.
+    -   **Next debug checklist**:
+        1.  List the contents of the unzipped folder () to verify the files.
+        2.  Move all the image files from the temporary directory to .
+        3.  Verify the file count in the destination directory is now 78 (or 79 with the card back).
+        4.  Update the  configuration in  to reflect that the Anime deck is now complete with 78 cards.
+    -   **Why fix this issue and what will be achieved with the fix?**: It completes a core feature of the app (the multi-deck system) and fulfills a user request.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend.
+    -   **Blocked on other issue**: None.
+
+**In progress Task List**:
+The pending issues cover the in-progress tasks.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **Task 1 (P0)**: Integrate the remaining Minor Arcana suits (Wands, Swords, Pentacles). The user will provide the artwork for these 42 cards at a later time.
+-   **Task 1 (P1)**: Implement a real payment provider. The user has deferred this choice but it will be necessary to move beyond the mock payment system.
+-   **Task 2 (P1)**: Implement PWA (Progressive Web App) support.
+-   **Task 3 (P2)**: Implement private user accounts with persistent reading history using a database (e.g., Supabase/Firebase was mentioned as a future option).
 
 **Future Tasks:**
--   **Task 2 (P1)**: Finalize the application's name. The current name is Arcanum. The user has inquired about changing it and adding a logo, and the agent has confirmed this can be done easily later.
--   **Task 3 (P2)**: Implement further layout and theme customizations (fonts, colors, background) if requested by the user. The agent has already provided instructions on how to do this.
--   **Task 4 (P2)**: Add a custom logo. The user has expressed interest in this.
+-   **Task 4 (P2)**: Add French language support (i18n).
+-   **Task 5 (P2)**: Integrate artwork for other planned decks (Alchemy, Midnight, Ethereal).
+-   **Task 6 (P3)**: Add a card shuffle animation.
+-   **Task 7 (P3)**: Implement advanced premium features like Decision Pattern Tracking and Recurring Lens Keywords analysis.
 
 **Completed work in this session**
--   **Application Scaffolding**: Built the complete React frontend and Flask backend from scratch.
--   **AI Integration**: Integrated OpenAI to provide AI-powered interpretations for card readings.
--   **Initial Feature Implementation**: Created the daily card, multiple card spreads (Single, 3-Card, Celtic Cross), reading history, and card library features.
--   **Feature Simplification (User Request)**:
-    -   Removed the reversed cards functionality from both the backend logic and frontend display.
-    -   Simplified the UI to exclusively support a 3-card spread, removing the single card and Celtic Cross options.
-    -   Made the question input field a mandatory part of the reading process.
--   **Custom Artwork Integration**:
-    -   Integrated the user's custom card back image.
-    -   Successfully integrated custom artwork for all 22 Major Arcana cards.
-    -   Successfully integrated custom artwork for the first 9 cards of the Cups suit.
--   **Bug Fixes**: Resolved various issues during development, including React Router import errors, a missing  field in the Pydantic model after a server restart, and incorrect card flip animations.
+-   **Full UI & Copy Overhaul**:
+    -   Redesigned the Daily Card page () with new text, a feedback mechanism, and a larger card display.
+    -   Redesigned the Explore a Decision and Draw Cards pages () with new, decision-focused copy.
+-   **Interpretation Engine V2**:
+    -   Created a complete 78-card structured database in .
+    -   Updated the backend AI prompt in  to use this structured data, resulting in more consistent, pattern-based interpretations.
+-   **Reading Result Page V3**:
+    -   Completely re-architected the page to display data from the new engine, including lens keyword chips, core dynamic text, and situation highlights.
+    -   Removed the Reflect Before Deciding section.
+    -   Redesigned Decision Insight into a 2x2 grid (Pattern, Tension, Approach, Try This Now).
+    -   Replaced the AI-generated Next Step with a static, actionable TRY THIS NOW box.
+-   **Personalized Daily Card**: Implemented a feature using  and a new backend endpoint () to ensure each user gets their own unique daily card for 24 hours.
+-   **Theming**: Changed the primary font for all text and titles to **Montserrat**.
+-   **Feature Scaffolding**: Began the implementation of the Premium/Paywall system and the Clarifier feature, creating multiple new components and contexts.
 
 **Earlier issues found/mentioned but not fixed**
-None. All issues identified during the session were resolved.
+-   The user's initial request from the previous fork to add No predictions. Just perspective. on the Welcome page was never addressed as the user immediately pivoted to a long series of other changes.
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork**: The pod was reinitialized due to a memory limit error. After the restart, the application state was partially lost; specifically, the  field added to the Pydantic  model in  was missing.
--   **Recurrence count**: 1
--   **Status**: RESOLVED. The agent correctly identified the missing code and added it back. This was a state-loss issue from reinitialization, not a persistent code bug.
+None.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Frontend**: React, React Router, Tailwind CSS, Axios
--   **Backend**: Flask, Pydantic
--   **AI Integration**: OpenAI API for generating card interpretations.
--   **Data Storage**: In-memory Python lists for card deck data and reading history (not persistent).
+-   **Frontend**: React, React Router, Tailwind CSS, Axios, Framer Motion, , .
+-   **Backend**: FastAPI, Pydantic, Motor.
+-   **Database**: MongoDB (for daily card caching).
+-   **AI Integration**: OpenAI API.
 
 **key DB schema**
-No database is used. Data is stored in-memory within .
--   **tarot_deck**: A list of dictionaries, where each dictionary represents a card with keys: uid=0(root) gid=0(root) groups=0(root), , , , ,  (optional).
--   **reading_history**: A list that stores dictionaries of past readings. This data is lost upon server restart.
+-   ** collection**:  (caching the global daily card).
+-   ****: Used for the personal daily card (, ) and the premium features (, , , ).
 
 **changes in tech stack**
 None.
 
 **All files of reference**
--   : The core of the application. Contains all API logic, tarot card data, and OpenAI integration. It is frequently updated to add s for new cards.
--   : This directory holds all the custom card images provided by the user.
--   : Handles the visual representation and flip animation of the tarot cards, displaying either the custom back or the custom face art.
--   : The main user interaction page. It was significantly modified to streamline the experience to a single 3-card spread flow.
--   : Defines the app's color palette and custom fonts.
--   : Contains global CSS, Google Fonts imports, and the background texture style.
+-   Files to complete the current task:
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
+    -   
+-   Key new files from this session:
+    -    (The core of the new interpretation engine).
+-   Key modified files:
+    -   
+    -   
+    -   
 
 **Areas that need refactoring**:
--   The reading history in  is not persistent. If the user requires history to be saved between sessions, this should be refactored to use a simple database (e.g., SQLite) or file-based storage.
+-   The current work-in-progress for the Premium and Clarifier features is scattered across many files and needs to be completed and unified.
+-   The use of  for tracking reading counts and premium status is a temporary measure and should be migrated to a proper user database in the future.
 
 **key api endpoints**
--   : Retrieves the daily card.
--   : Returns the entire deck data, including image URLs.
--   : Draws three cards for a reading.
--   : Sends a question and drawn cards to the OpenAI API for interpretation.
--   : Retrieves the current session's reading history.
+-   : Gets the main 3-card reading.
+-   : **NEW**. Retrieves a user-specific daily card.
+-   : **NEW (PLANNED)**. Gets the interpretation for the single clarifier card.
+-   : Retrieves the global daily card (still exists but  now uses the personal one).
+-   : Fetches the list of available decks.
 
 **Critical Info for New Agent**
--   **User Workflow for Cards**: The user provides custom card artwork in batches. Your primary task is to integrate these images by downloading them to  and updating the  field for the corresponding cards in the  list within .
--   **Non-Persistent History**: Be aware that the reading history is stored in a simple Python list on the backend and is cleared every time the server restarts. This is the current design and has not been flagged as an issue by the user.
--   **Simplified UI**: The application has been intentionally simplified to only support 3-card spreads. Do not attempt to re-introduce other spread types unless explicitly requested by the user.
+-   **User Confusion**: The user recently got confused by the platform's internal job names (e.g., card-clarity), thinking their work was lost or moved. You **MUST** start by reassuring them that all their progress on Flipwill is safe in the current session and that these names are irrelevant.
+-   **Incomplete Implementation**: You are picking up in the middle of a large, multi-file feature implementation (Premium + Clarifier). The code is not in a working state. Your first priority is to finish this implementation.
+-   **Mocked Payments**: The payment system is intentionally mocked. Do not try to implement a real payment provider until the user decides on one.
+-   **Asset Management**: The Anime card assets have been downloaded to a temporary directory. They need to be moved to  to complete that task.
 
 **documents and test reports created in this job**
 None.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: lasts cards for cups. It should be complete + uploaded 5 images. (PENDING INTEGRATION)
-2.  **User**: next cups cards + uploaded 5 images. (Completed)
-3.  **User**: will download all cups cards + uploaded 4 images. (Completed)
-4.  **User**: where can I see the cards I have downloaded? (Completed)
-5.  **User**: I sent new cards but I cannot see them in the assets library (Completed)
-6.  **User**: yes you can replace with new cards I sent (Completed)
-7.  **User**: replacing + uploaded 1 image. (Completed)
-8.  **User**: next soon + uploaded 4 images. (Completed)
-9.  **User**: more + uploaded 5 images. (Completed)
-10. **User**: I want to change or add more cards + uploaded 5 images. (Completed)
+1.  **User**: Asks to change Next Step to TRY THIS NOW with static content. (Completed)
+2.  **User**: Points out that titles were not changed to Montserrat font. (Completed)
+3.  **User**: Provides a detailed spec for the premium payment system (Flipwill+).
+4.  **User**: Confirms pricing and requests a 7-day trial, but states they don't have a Stripe account. Defers payment provider decision.
+5.  **User**: Chooses Option A (mock payment flow).
+6.  **User**: Asks agent waiting for what? when the agent paused.
+7.  **User**: Provides a detailed spec for the Clarifier feature (Reveal the Missing Piece).
+8.  **User**: Provides a Google Drive link for the remaining Anime deck cards.
+9.  **User**: Expresses confusion and frustration about forks, sessions, and credits, asking what to do.
+10. **User**: Asks if they need to move their work from flipwill-tarot to card-clarity. (PENDING: Agent must clarify this is not necessary).
 
 **Project Health Check:**
--   **Broken**: None.
--   **Mocked**: None.
+-   **Broken**: The premium/paywall and clarifier features are partially implemented and are likely breaking the reading flow. The UI might have broken elements related to these unfinished features.
+-   **Mocked**: The entire payment and premium upgrade flow is mocked. It unlocks features in  without actual payment.
 
 **3rd Party Integrations**
--   **OpenAI GPT**: Used for generating tarot card interpretations. Uses the .
+-   **OpenAI GPT**: Powers all card interpretations via the Emergent LLM Key.
+-   **Google Drive**: The  library was used to download card assets from a user-provided link.
 
 **Testing status**
--   **Testing agent used after significant changes**: YES (once, to resolve an early bug).
--   **Troubleshoot agent used after agent stuck in loop**: NO.
+-   **Testing agent used after significant changes**: NO
+-   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: None.
+-   **Known regressions**: None identified, but the app is in a broken state due to the incomplete implementation.
 
 **Credentials to test flow:**
-N/A - The application does not have a login system.
+N/A - No authentication.
 
 **What agent forgot to execute**
-The agent has not yet integrated the final batch of 5 'Cups' cards that the user uploaded in their very last message. The agent's last response was related to a previous batch of cards. The immediate next step is to download and integrate these final 5 Cups cards.</analysis>
+-   The agent was interrupted mid-implementation of the Premium/Clarifier features. This entire task is unfinished.
+-   The agent downloaded the Anime deck assets but did not move them from the temporary download folder to the correct  directory.
+-   The original request to add text to the  page was superseded and never implemented.
+-   The agent did not update  with the massive amount of changes from this session.</analysis>
