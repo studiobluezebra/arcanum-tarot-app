@@ -100,7 +100,7 @@ Each card has:
 
 ## Assets
 - `/app/frontend/public/cards/original/` - 78 complete cards
-- `/app/frontend/public/cards/anime/` - 22 partial cards
+- `/app/frontend/public/cards/anime/` - 49 cards (Major Arcana + Cups + Pentacles partial)
 - `/app/frontend/public/logo.png` - Main logo
 - `/app/frontend/public/logo-horizontal.png` - Horizontal logo
 
@@ -114,7 +114,7 @@ Each card has:
 - Card library redesign
 - "Go Deeper" follow-up questions
 
-### Session 2 (Current)
+### Session 2
 - Home page redesign (Daily Perspective)
 - Draw page copy updates
 - Reading result page restructure:
@@ -129,21 +129,32 @@ Each card has:
   - Enhanced AI prompts using card templates
   - Card metadata passed to frontend
 
+### Session 3 (Dec 15, 2025) - Bug Fixes
+- **Fixed Card & Deck System Corruption:**
+  - Updated `DECK_CARDS` in server.py to correctly reflect anime deck cards (49 total)
+  - Original deck: 78 cards, Anime deck: 49 cards now showing correctly in library
+- **Fixed Clarifier Feature:**
+  - Changed `axios.get` to `axios.post` in ClarifierPanel.js for /api/draw endpoint
+  - Clarifier now correctly draws and displays cards with AI interpretations
+  - Full clarifier flow working: select focus → draw card → view interpretation → continue exploring
+- **Testing:** All 21 backend API tests passing, frontend UI tests passing
+
 ## Upcoming Tasks
 
 ### P0 (High Priority)
-- Complete Anime deck (56 remaining cards + card back)
-- User testing feedback incorporation
+- Complete Anime deck (29 remaining cards: Wands 14, Swords 14, Pentacles 1)
+- Complete Premium Feature Implementation (wire up paywall, reading limits)
 
 ### P1 (Medium Priority)
+- Integrate real payment provider (alternative to Stripe)
 - PWA support for mobile installation
-- Monetization (Stripe subscriptions/premium decks)
+- User accounts with persistent reading history (Supabase/Firebase)
 
 ### P2 (Lower Priority)
-- User accounts with persistent reading history
 - French language support (i18n)
 - Additional deck artwork (Alchemy, Midnight, Ethereal)
 - Card shuffle animation
+- Premium analytics (Decision Pattern Tracking)
 
 ## Design Guidelines
 - **Colors:** Dark celestial (#141414 background, #D4AF37 gold accent)
