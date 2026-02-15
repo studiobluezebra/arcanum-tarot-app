@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import TarotCard from '../components/TarotCard';
+import { usePremium } from '../context/PremiumContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -10,6 +11,7 @@ const API = `${BACKEND_URL}/api`;
 const DrawCard = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { canDoReading, incrementReadingCount, triggerPaywall, getRemainingReadings, isPremium } = usePremium();
   const [question, setQuestion] = useState('');
   const [drawnCards, setDrawnCards] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -26,6 +28,12 @@ const DrawCard = () => {
   const handleDraw = async () => {
     if (!question.trim()) {
       alert('Please enter your question first');
+      return;
+    }
+    
+    // Check reading limit for free users
+    if (!canDoReading()) {
+      triggerPaywall("You've used your 2 free readings today. Unlock FlipWill+ for unlimited readings.");
       return;
     }
 
