@@ -75,6 +75,9 @@ const DrawCard = () => {
       };
 
       await axios.post(`${API}/readings`, reading);
+      
+      // Increment reading count for free users
+      incrementReadingCount();
 
       navigate('/reading', { state: { reading } });
     } catch (error) {
