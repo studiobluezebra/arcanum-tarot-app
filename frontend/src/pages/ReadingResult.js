@@ -386,11 +386,11 @@ const ReadingResult = () => {
           </div>
           <div className="flex justify-center gap-4 flex-wrap max-w-2xl mx-auto">
             <button
-              onClick={() => navigate('/draw')}
-              data-testid="need-clarity-btn"
-              className="bg-transparent text-[#E8DCC8] border border-[#3D3D3D] font-ui text-sm uppercase tracking-widest px-6 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300"
+              onClick={() => setShowClarifier(true)}
+              data-testid="reveal-missing-piece-btn"
+              className="bg-transparent text-[#E8DCC8] border border-[#3D3D3D] font-ui text-sm uppercase tracking-widest px-6 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300 flex items-center gap-2"
             >
-              I need more clarity
+              <span>🔍</span> Reveal the Missing Piece
             </button>
             <button
               onClick={() => navigate('/home')}
@@ -404,10 +404,19 @@ const ReadingResult = () => {
               data-testid="explore-angle-btn"
               className="bg-transparent text-[#E8DCC8] border border-[#3D3D3D] font-ui text-sm uppercase tracking-widest px-6 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300"
             >
-              I want to explore another angle
+              Start a new reading
             </button>
           </div>
         </motion.div>
+
+        {/* Clarifier Panel */}
+        <ClarifierPanel
+          isOpen={showClarifier}
+          onClose={() => setShowClarifier(false)}
+          originalQuestion={reading.question}
+          originalCards={reading.cards}
+          originalInterpretation={reading.interpretation}
+        />
 
       </div>
     </div>
