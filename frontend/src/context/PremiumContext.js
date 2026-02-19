@@ -1,4 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+
+const API = process.env.REACT_APP_BACKEND_URL;
 
 const PremiumContext = createContext();
 
@@ -15,6 +18,7 @@ export const PremiumProvider = ({ children }) => {
   const [readingsToday, setReadingsToday] = useState(0);
   const [showPaywall, setShowPaywall] = useState(false);
   const [paywallMessage, setPaywallMessage] = useState('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const FREE_READINGS_LIMIT = 2;
 
@@ -48,7 +52,81 @@ export const PremiumProvider = ({ children }) => {
       localStorage.setItem('flipwill_readings_count', '0');
       setReadingsToday(0);
     }
+
+    // Check if returning from Stripe checkout
+    checkStripeReturn();
   }, []);
+
+  // Check if returning from Stripe checkout
+  const checkStripeReturn = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const sessionId = urlParams.get('session_id');
+    const status = urlParams.get('status');
+
+    if (sessionId && status === 'success') {
+      setIsProcessingPayment(true);
+      try {
+        // Poll for payment status
+        await pollPaymentStatus(sessionId);
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+      } finally {
+        setIsProcessingPayment(false);
+        // Clean up URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    }
+  };
+
+  // Poll payment status
+  const pollPaymentStatus = async (sessionId, attempts = 0) => {
+    const maxAttempts = 5;
+    const pollInterval = 2000;
+
+    if (attempts >= maxAttempts) {
+      console.log('Payment status check timed out');
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${API}/payments/status/${sessionId}`);
+      const data = response.data;
+
+      if (data.payment_status === 'paid') {
+        // Payment successful - activate premium
+        const plan = data.metadata?.plan_id || 'monthly';
+        activatePremium(plan);
+        return;
+      } else if (data.status === 'expired') {
+        console.log('Payment session expired');
+        return;
+      }
+
+      // Continue polling
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+      await pollPaymentStatus(sessionId, attempts + 1);
+    } catch (error) {
+      console.error('Error polling payment status:', error);
+    }
+  };
+
+  // Activate premium after successful payment
+  const activatePremium = (plan) => {
+    const now = new Date();
+    let expiryDate;
+    
+    if (plan === 'yearly') {
+      expiryDate = new Date(now.setFullYear(now.getFullYear() + 1));
+    } else {
+      expiryDate = new Date(now.setMonth(now.getMonth() + 1));
+    }
+
+    localStorage.setItem('flipwill_premium', 'true');
+    localStorage.setItem('flipwill_premium_expiry', expiryDate.toISOString());
+    localStorage.setItem('flipwill_premium_plan', plan);
+    setIsPremium(true);
+    setShowPaywall(false);
+  };
 
   // Check if user can do a reading
   const canDoReading = () => {
@@ -83,25 +161,32 @@ export const PremiumProvider = ({ children }) => {
     setPaywallMessage('');
   };
 
-  // Mock upgrade to premium (for testing)
-  const upgradeToPremium = (plan = 'monthly') => {
-    const now = new Date();
-    let expiryDate;
-    
-    if (plan === 'yearly') {
-      expiryDate = new Date(now.setFullYear(now.getFullYear() + 1));
-    } else {
-      expiryDate = new Date(now.setMonth(now.getMonth() + 1));
-    }
+  // Upgrade to premium via Stripe
+  const upgradeToPremium = async (plan = 'monthly') => {
+    try {
+      setIsProcessingPayment(true);
+      
+      const userId = localStorage.getItem('flipwill_user_id') || `user_${Date.now()}`;
+      localStorage.setItem('flipwill_user_id', userId);
 
-    localStorage.setItem('flipwill_premium', 'true');
-    localStorage.setItem('flipwill_premium_expiry', expiryDate.toISOString());
-    localStorage.setItem('flipwill_premium_plan', plan);
-    setIsPremium(true);
-    setShowPaywall(false);
+      const response = await axios.post(`${API}/payments/create-checkout`, {
+        plan_id: plan,
+        origin_url: window.location.origin,
+        user_id: userId
+      });
+
+      // Redirect to Stripe Checkout
+      if (response.data.url) {
+        window.location.href = response.data.url;
+      }
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      setIsProcessingPayment(false);
+      alert('Unable to start checkout. Please try again.');
+    }
   };
 
-  // Start free trial
+  // Start free trial (still works without payment)
   const startFreeTrial = () => {
     const now = new Date();
     const expiryDate = new Date(now.setDate(now.getDate() + 7)); // 7-day trial
@@ -113,7 +198,7 @@ export const PremiumProvider = ({ children }) => {
     setShowPaywall(false);
   };
 
-  // Cancel premium (for testing)
+  // Cancel premium
   const cancelPremium = () => {
     localStorage.removeItem('flipwill_premium');
     localStorage.removeItem('flipwill_premium_expiry');
@@ -139,6 +224,7 @@ export const PremiumProvider = ({ children }) => {
         readingsToday,
         showPaywall,
         paywallMessage,
+        isProcessingPayment,
         FREE_READINGS_LIMIT,
         canDoReading,
         getRemainingReadings,
