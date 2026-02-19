@@ -85,8 +85,8 @@ const ClarifierPanel = ({
   };
 
   const handleNextAction = (action) => {
-    // Check premium for additional clarifiers
-    if (!isPremium && clarifierCount >= 1) {
+    // Check premium for additional clarifiers (allow 2 free per reading)
+    if (!isPremium && clarifierCount >= 2) {
       triggerPaywall('Unlock deeper clarity. Continue your deep dive with unlimited clarifier draws.');
       return;
     }
