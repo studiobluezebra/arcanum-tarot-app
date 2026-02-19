@@ -175,7 +175,7 @@ const ClarifierPanel = ({
                 Draw 1 card to clarify this aspect
               </h2>
               
-              {/* Face-down card */}
+              {/* Face-down card with actual back image */}
               <div 
                 className="w-40 h-60 mx-auto mb-6 cursor-pointer"
                 onClick={handleDrawCard}
@@ -183,17 +183,25 @@ const ClarifierPanel = ({
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-full h-full bg-gradient-to-br from-[#D4AF37]/20 to-[#1E1E1E] border-2 border-[#D4AF37]/30 rounded-lg flex items-center justify-center"
+                  className="w-full h-full relative"
                 >
                   {isLoading ? (
-                    <div className="text-[#D4AF37] animate-pulse">Drawing...</div>
-                  ) : (
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">🃏</div>
-                      <div className="font-ui text-xs text-[#D4AF37] uppercase tracking-widest">
-                        Tap to Draw
-                      </div>
+                    <div className="w-full h-full bg-gradient-to-br from-[#D4AF37]/20 to-[#1E1E1E] border-2 border-[#D4AF37]/30 rounded-lg flex items-center justify-center">
+                      <div className="text-[#D4AF37] animate-pulse">Drawing...</div>
                     </div>
+                  ) : (
+                    <>
+                      <img
+                        src={getBackImageUrl()}
+                        alt="Card back"
+                        className="w-full h-full object-cover rounded-lg border-2 border-[#D4AF37]/30"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+                        <div className="font-ui text-xs text-[#D4AF37] uppercase tracking-widest bg-black/50 px-3 py-2 rounded">
+                          Tap to Draw
+                        </div>
+                      </div>
+                    </>
                   )}
                 </motion.div>
               </div>
