@@ -11,6 +11,7 @@ import CardLibrary from './pages/CardLibrary';
 import Upgrade from './pages/Upgrade';
 import Navigation from './components/Navigation';
 import PaywallModal from './components/PaywallModal';
+import InstallPrompt from './components/InstallPrompt';
 import './App.css';
 
 // Wrapper to conditionally show Navigation
@@ -22,6 +23,7 @@ const AppContent = () => {
     <>
       {!isWelcomePage && <Navigation />}
       <PaywallModal />
+      <InstallPrompt />
       <Routes>
         <Route path="/" element={<Welcome />} />
         <Route path="/home" element={<Home />} />
