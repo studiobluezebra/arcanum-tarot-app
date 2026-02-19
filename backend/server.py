@@ -528,8 +528,6 @@ Provide a brief daily perspective message (2-3 sentences) about how this card's 
             "core_dynamic": template.get("core_dynamic", "")
         }
 
-app.include_router(api_router)
-
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
