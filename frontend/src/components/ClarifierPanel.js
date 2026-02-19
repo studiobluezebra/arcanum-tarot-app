@@ -32,10 +32,8 @@ const ClarifierPanel = ({
   ];
 
   const handleSelectFocus = (focus) => {
-    // Check if free user already used clarifier
-    const usedClarifier = localStorage.getItem('flipwill_clarifier_used_' + Date.now().toString().slice(0, -5));
-    
-    if (!isPremium && clarifierCount >= 1) {
+    // Check if free user already used 2 clarifiers
+    if (!isPremium && clarifierCount >= 2) {
       triggerPaywall('Unlock deeper clarity. Continue your deep dive with unlimited clarifier draws.');
       return;
     }
