@@ -544,6 +544,203 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# ============== STRIPE PAYMENT INTEGRATION ==============
+from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
+from fastapi import Request
+
+# Subscription pricing - Fixed on backend (DO NOT accept from frontend)
+SUBSCRIPTION_PLANS = {
+    "monthly": {"amount": 4.99, "name": "FlipWill+ Monthly", "interval": "month"},
+    "yearly": {"amount": 39.99, "name": "FlipWill+ Yearly", "interval": "year"}
+}
+
+class CreateCheckoutRequest(BaseModel):
+    plan_id: str = Field(..., description="Plan ID: 'monthly' or 'yearly'")
+    origin_url: str = Field(..., description="Frontend origin URL for redirects")
+    user_id: Optional[str] = Field(None, description="User identifier")
+
+class CheckoutResponse(BaseModel):
+    url: str
+    session_id: str
+
+@api_router.post("/payments/create-checkout", response_model=CheckoutResponse)
+async def create_checkout_session(request: CreateCheckoutRequest, http_request: Request):
+    """Create a Stripe checkout session for subscription"""
+    try:
+        # Validate plan
+        if request.plan_id not in SUBSCRIPTION_PLANS:
+            raise HTTPException(status_code=400, detail="Invalid plan ID. Use 'monthly' or 'yearly'")
+        
+        plan = SUBSCRIPTION_PLANS[request.plan_id]
+        
+        # Get Stripe API key
+        stripe_api_key = os.environ.get('STRIPE_SECRET_KEY')
+        if not stripe_api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        # Create webhook URL
+        host_url = str(http_request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        # Initialize Stripe checkout
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        # Build success and cancel URLs from frontend origin
+        success_url = f"{request.origin_url}/upgrade?session_id={{CHECKOUT_SESSION_ID}}&status=success"
+        cancel_url = f"{request.origin_url}/upgrade?status=cancelled"
+        
+        # Create checkout session with custom amount
+        checkout_request = CheckoutSessionRequest(
+            amount=float(plan["amount"]),
+            currency="usd",
+            success_url=success_url,
+            cancel_url=cancel_url,
+            metadata={
+                "plan_id": request.plan_id,
+                "plan_name": plan["name"],
+                "user_id": request.user_id or "anonymous"
+            }
+        )
+        
+        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
+        
+        # Store transaction in database
+        transaction = {
+            "session_id": session.session_id,
+            "plan_id": request.plan_id,
+            "amount": plan["amount"],
+            "currency": "usd",
+            "user_id": request.user_id,
+            "status": "pending",
+            "payment_status": "initiated",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.payment_transactions.insert_one(transaction)
+        
+        return CheckoutResponse(url=session.url, session_id=session.session_id)
+        
+    except Exception as e:
+        logger.error(f"Error creating checkout session: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/payments/status/{session_id}")
+async def get_payment_status(session_id: str, http_request: Request):
+    """Get the status of a payment session"""
+    try:
+        stripe_api_key = os.environ.get('STRIPE_SECRET_KEY')
+        if not stripe_api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        host_url = str(http_request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        
+        # Update transaction in database
+        update_data = {
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Only mark as completed once
+        existing = await db.payment_transactions.find_one({"session_id": session_id})
+        if existing and existing.get("payment_status") != "paid":
+            await db.payment_transactions.update_one(
+                {"session_id": session_id},
+                {"$set": update_data}
+            )
+        
+        return {
+            "session_id": session_id,
+            "status": status.status,
+            "payment_status": status.payment_status,
+            "amount_total": status.amount_total,
+            "currency": status.currency,
+            "metadata": status.metadata
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting payment status: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/webhook/stripe")
+async def stripe_webhook(request: Request):
+    """Handle Stripe webhook events"""
+    try:
+        stripe_api_key = os.environ.get('STRIPE_SECRET_KEY')
+        if not stripe_api_key:
+            raise HTTPException(status_code=500, detail="Stripe not configured")
+        
+        host_url = str(http_request.base_url).rstrip('/')
+        webhook_url = f"{host_url}/api/webhook/stripe"
+        
+        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        
+        # Get request body
+        body = await request.body()
+        signature = request.headers.get("Stripe-Signature")
+        
+        webhook_response = await stripe_checkout.handle_webhook(body, signature)
+        
+        # Update transaction based on webhook event
+        if webhook_response.session_id:
+            await db.payment_transactions.update_one(
+                {"session_id": webhook_response.session_id},
+                {"$set": {
+                    "status": webhook_response.event_type,
+                    "payment_status": webhook_response.payment_status,
+                    "webhook_event_id": webhook_response.event_id,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+        
+        return {"status": "success"}
+        
+    except Exception as e:
+        logger.error(f"Webhook error: {str(e)}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+@api_router.get("/payments/plans")
+async def get_subscription_plans():
+    """Get available subscription plans"""
+    return {
+        "plans": [
+            {
+                "id": "monthly",
+                "name": "FlipWill+ Monthly",
+                "price": 4.99,
+                "currency": "usd",
+                "interval": "month",
+                "features": [
+                    "Unlimited readings",
+                    "Unlimited clarifier draws",
+                    "Reading history",
+                    "Save reflections",
+                    "Decision pattern tracking"
+                ]
+            },
+            {
+                "id": "yearly",
+                "name": "FlipWill+ Yearly",
+                "price": 39.99,
+                "currency": "usd",
+                "interval": "year",
+                "savings": "Save 33%",
+                "features": [
+                    "Unlimited readings",
+                    "Unlimited clarifier draws",
+                    "Reading history",
+                    "Save reflections",
+                    "Decision pattern tracking"
+                ]
+            }
+        ]
+    }
+
+# ============== END STRIPE INTEGRATION ==============
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
