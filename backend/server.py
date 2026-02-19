@@ -673,7 +673,7 @@ async def stripe_webhook(request: Request):
         if not stripe_api_key:
             raise HTTPException(status_code=500, detail="Stripe not configured")
         
-        host_url = str(http_request.base_url).rstrip('/')
+        host_url = str(request.base_url).rstrip('/')
         webhook_url = f"{host_url}/api/webhook/stripe"
         
         stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
