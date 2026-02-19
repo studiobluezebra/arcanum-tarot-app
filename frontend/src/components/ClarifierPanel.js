@@ -15,7 +15,7 @@ const ClarifierPanel = ({
   originalInterpretation 
 }) => {
   const { isPremium, triggerPaywall } = usePremium();
-  const { getCardImageUrl } = useDeck();
+  const { getCardImageUrl, getBackImageUrl } = useDeck();
   
   const [step, setStep] = useState('select'); // select, draw, revealed, interpretation
   const [selectedFocus, setSelectedFocus] = useState(null);
