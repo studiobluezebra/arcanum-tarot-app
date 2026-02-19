@@ -16,7 +16,7 @@ const InstallPrompt = () => {
     if (dismissed) {
       const dismissedDate = new Date(dismissed);
       const daysSinceDismissed = (Date.now() - dismissedDate.getTime()) / (1000 * 60 * 60 * 24);
-      if (daysSinceDismissed < 7) return; // Don't show for 7 days after dismiss
+      if (daysSinceDismissed < 7) return;
     }
 
     // Check if iOS
@@ -27,20 +27,14 @@ const InstallPrompt = () => {
     const handler = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      // Show prompt after a short delay
-      setTimeout(() => setShowPrompt(true), 3000);
+      setShowPrompt(true);
     };
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    // For iOS, show the manual install instructions after delay
+    // For iOS, show immediately
     if (isIOSDevice) {
-      const hasVisitedBefore = localStorage.getItem('pwa_visited');
-      if (hasVisitedBefore) {
-        setTimeout(() => setShowPrompt(true), 5000);
-      } else {
-        localStorage.setItem('pwa_visited', 'true');
-      }
+      setShowPrompt(true);
     }
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
@@ -70,47 +64,49 @@ const InstallPrompt = () => {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ opacity: 0, y: 50 }}
+        initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 50 }}
-        className="fixed bottom-24 left-4 right-4 md:left-auto md:right-4 md:w-80 bg-[#1E1E1E] border border-[#D4AF37]/30 rounded-lg p-4 shadow-xl z-50"
+        exit={{ opacity: 0, y: -20 }}
+        className="fixed top-0 left-0 right-0 bg-gradient-to-r from-[#D4AF37] to-[#B8962E] z-[200] shadow-lg"
       >
-        <div className="flex items-start gap-3">
-          <img 
-            src="/icons/icon-72x72.png" 
-            alt="FlipWill" 
-            className="w-12 h-12 rounded-lg"
-          />
-          <div className="flex-1">
-            <h3 className="font-heading text-[#D4AF37] text-sm mb-1">
-              Install FlipWill
-            </h3>
-            {isIOS ? (
-              <p className="font-reading text-xs text-[#8B8B8B]">
-                Tap <span className="text-[#E8DCC8]">Share</span> then <span className="text-[#E8DCC8]">"Add to Home Screen"</span>
-              </p>
-            ) : (
-              <p className="font-reading text-xs text-[#8B8B8B]">
-                Add to your home screen for quick access
-              </p>
-            )}
+        <div className="max-w-screen-xl mx-auto px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img 
+              src="/icons/icon-72x72.png" 
+              alt="FlipWill" 
+              className="w-8 h-8 rounded-lg"
+            />
+            <div>
+              {isIOS ? (
+                <p className="font-ui text-xs text-[#141414]">
+                  <span className="font-bold">Install FlipWill:</span> Tap Share <span className="inline-block mx-1">⬆️</span> then "Add to Home Screen"
+                </p>
+              ) : (
+                <p className="font-ui text-xs text-[#141414]">
+                  <span className="font-bold">Install FlipWill</span> for quick access anytime
+                </p>
+              )}
+            </div>
           </div>
-          <button
-            onClick={handleDismiss}
-            className="text-[#8B8B8B] hover:text-[#E8DCC8] text-lg"
-          >
-            ×
-          </button>
+          
+          <div className="flex items-center gap-2">
+            {!isIOS && deferredPrompt && (
+              <button
+                onClick={handleInstall}
+                className="bg-[#141414] text-[#D4AF37] font-ui text-xs uppercase tracking-wider px-4 py-1.5 rounded hover:bg-[#2a2a2a] transition-all"
+              >
+                Install
+              </button>
+            )}
+            <button
+              onClick={handleDismiss}
+              className="text-[#141414]/70 hover:text-[#141414] text-xl font-bold px-2"
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+          </div>
         </div>
-        
-        {!isIOS && deferredPrompt && (
-          <button
-            onClick={handleInstall}
-            className="w-full mt-3 bg-[#D4AF37] text-[#141414] font-ui text-xs uppercase tracking-widest py-2 rounded hover:bg-[#E8C872] transition-all"
-          >
-            Install App
-          </button>
-        )}
       </motion.div>
     </AnimatePresence>
   );
