@@ -739,6 +739,9 @@ async def get_subscription_plans():
 
 # ============== END STRIPE INTEGRATION ==============
 
+# Include router AFTER all routes are defined
+app.include_router(api_router)
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
