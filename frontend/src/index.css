@@ -54,6 +54,10 @@ code {
     body {
         @apply bg-[#141414] text-[#E8DCC8];
     }
+    html {
+        /* Support for safe areas on notched devices (iPhone X+, etc) */
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
 }
 
 .bg-texture {
