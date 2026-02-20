@@ -180,7 +180,7 @@ const Upgrade = () => {
               <div className="text-3xl font-bold text-[#D4AF37] mb-1">$4.99</div>
               <div className="font-reading text-sm text-[#8B8B8B] mb-4">per month</div>
               <button
-                onClick={() => upgradeToPremium('monthly')}
+                onClick={() => handleUpgrade('monthly')}
                 className="w-full bg-transparent border border-[#3D3D3D] text-[#E8DCC8] font-ui text-sm uppercase tracking-widest py-3 rounded hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
               >
                 Choose Monthly
@@ -195,7 +195,7 @@ const Upgrade = () => {
               <div className="text-3xl font-bold text-[#D4AF37] mb-1">$39.99</div>
               <div className="font-reading text-sm text-[#8B8B8B] mb-4">per year (save 33%)</div>
               <button
-                onClick={() => upgradeToPremium('yearly')}
+                onClick={() => handleUpgrade('yearly')}
                 className="w-full bg-[#D4AF37] text-[#141414] font-ui text-sm uppercase tracking-widest py-3 rounded hover:bg-[#E8C872] transition-all"
               >
                 Choose Yearly
