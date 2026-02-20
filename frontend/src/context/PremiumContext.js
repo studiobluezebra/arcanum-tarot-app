@@ -175,6 +175,13 @@ export const PremiumProvider = ({ children }) => {
     try {
       setIsProcessingPayment(true);
       
+      // Track checkout_started event
+      trackEvent(EVENTS.CHECKOUT_STARTED, {
+        plan: plan,
+        amount: plan === 'yearly' ? 39.99 : 4.99,
+        source: 'paywall',
+      });
+      
       const userId = localStorage.getItem('flipwill_user_id') || `user_${Date.now()}`;
       localStorage.setItem('flipwill_user_id', userId);
 
