@@ -395,7 +395,7 @@ const ReadingResult = () => {
           </div>
           <div className="flex justify-center gap-4 flex-wrap max-w-2xl mx-auto">
             <button
-              onClick={() => setShowClarifier(true)}
+              onClick={handleOpenClarifier}
               data-testid="reveal-missing-piece-btn"
               className="bg-transparent text-[#E8DCC8] border border-[#3D3D3D] font-ui text-sm uppercase tracking-widest px-6 py-3 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all duration-300 flex items-center gap-2"
             >
