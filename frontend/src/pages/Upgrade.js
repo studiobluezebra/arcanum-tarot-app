@@ -182,6 +182,7 @@ const Upgrade = () => {
               <button
                 onClick={() => handleUpgrade('monthly')}
                 className="w-full bg-transparent border border-[#3D3D3D] text-[#E8DCC8] font-ui text-sm uppercase tracking-widest py-3 rounded hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
+                data-testid="monthly-plan-btn"
               >
                 Choose Monthly
               </button>
@@ -197,10 +198,18 @@ const Upgrade = () => {
               <button
                 onClick={() => handleUpgrade('yearly')}
                 className="w-full bg-[#D4AF37] text-[#141414] font-ui text-sm uppercase tracking-widest py-3 rounded hover:bg-[#E8C872] transition-all"
+                data-testid="yearly-plan-btn"
               >
                 Choose Yearly
               </button>
             </div>
+          </div>
+
+          {/* Promo Code Hint */}
+          <div className="mt-6 text-center border border-dashed border-[#3D3D3D] rounded-lg p-4 bg-[#1E1E1E]/50">
+            <p className="font-reading text-sm text-[#8B8B8B]">
+              Have a promo code? <span className="text-[#D4AF37]">Enter it at checkout</span> for exclusive discounts!
+            </p>
           </div>
         </motion.div>
 
