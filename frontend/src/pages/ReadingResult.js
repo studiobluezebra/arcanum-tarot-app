@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 import { useDeck } from '../context/DeckContext';
 import ClarifierPanel from '../components/ClarifierPanel';
+import { trackEvent, EVENTS } from '../utils/analytics';
 
 const ReadingResult = () => {
   const location = useLocation();
@@ -10,6 +11,14 @@ const ReadingResult = () => {
   const reading = location.state?.reading;
   const { getCardImageUrl } = useDeck();
   const [showClarifier, setShowClarifier] = useState(false);
+
+  // Handle opening clarifier with tracking
+  const handleOpenClarifier = () => {
+    trackEvent(EVENTS.CLARITY_CLICKED, {
+      cards: reading?.cards?.map(c => c.name).join(', ') || 'unknown',
+    });
+    setShowClarifier(true);
+  };
 
   if (!reading) {
     return (
