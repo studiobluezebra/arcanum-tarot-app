@@ -610,11 +610,19 @@ async def get_or_create_price(plan_id: str) -> str:
     
     return price.id
 
+from datetime import timedelta
+
 @api_router.post("/payments/setup-promo-codes")
 async def setup_promo_codes():
     """One-time setup to create FOUNDERS50 promo code in Stripe"""
     try:
         promo_config = PROMO_CODE_CONFIG["FOUNDERS50"]
+        
+        # Calculate expiry: 72 hours from now (for live environment, 
+        # this would be called on launch day, e.g., Saturday Dec 21)
+        now = datetime.now(timezone.utc)
+        expiry_datetime = now + timedelta(hours=promo_config["expiry_hours_after_launch"])
+        redeem_by_timestamp = int(expiry_datetime.timestamp())
         
         # Check if coupon already exists
         try:
@@ -628,7 +636,7 @@ async def setup_promo_codes():
                 name="Founders 50% Off First Month",
                 percent_off=promo_config["percent_off"],
                 duration=promo_config["duration"],
-                redeem_by=promo_config["redeem_by_timestamp"]
+                redeem_by=redeem_by_timestamp
             )
             coupon_id = coupon.id
             logger.info(f"Created coupon: {coupon_id}")
@@ -656,7 +664,7 @@ async def setup_promo_codes():
             "coupon_id": coupon_id,
             "promo_code_id": promo_code.id,
             "percent_off": promo_config["percent_off"],
-            "expires_at": datetime.fromtimestamp(promo_config["redeem_by_timestamp"], tz=timezone.utc).isoformat(),
+            "expires_at": expiry_datetime.isoformat(),
             "created_at": datetime.now(timezone.utc).isoformat()
         })
         
@@ -665,7 +673,7 @@ async def setup_promo_codes():
             "promo_code": "FOUNDERS50",
             "coupon_id": coupon_id,
             "promo_code_id": promo_code.id,
-            "expires_at": datetime.fromtimestamp(promo_config["redeem_by_timestamp"], tz=timezone.utc).isoformat()
+            "expires_at": expiry_datetime.isoformat()
         }
         
     except Exception as e:
