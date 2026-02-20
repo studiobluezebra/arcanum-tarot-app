@@ -7,113 +7,83 @@ The user wants to build Flipwill, a tarot-based decision-support tool. It is not
 -   **Core App Flow**:
     1.  A welcome page.
     2.  A daily card feature, personalized for each user.
-    3.  A three-card Explore a Decision reading (Influencing Forces, Current Mindset, Emerging Direction).
-    4.  A Decision Insight summary (Pattern, Tension, Approach) and a static TRY THIS NOW action box.
-    5.  A Clarifier feature to draw one extra card for deeper insight on a reading.
+    3.  A three-card Explore a Decision reading.
+    4.  A Decision Insight summary and a TRY THIS NOW action box.
+    5.  A Clarifier feature to draw extra cards for deeper insight.
     6.  A library to view all cards.
--   **Multi-Deck System**: Support multiple cosmetic decks. The Original deck should be complete. The Anime deck needs to be fully integrated.
--   **Monetization (FlipWill+)**: A premium subscription (monthly/yearly) that unlocks:
-    -   Unlimited readings (free users get 2/day).
-    -   Reading History.
-    -   Saving reflections and tracking decision patterns.
-    -   Paywalls should trigger on the 3rd reading or when accessing premium features.
+-   **Multi-Deck System**: Support multiple cosmetic decks. The Original and Anime decks should be complete (78 cards each).
+-   **Monetization (FlipWill+)**: A premium subscription (monthly/yearly) that unlocks unlimited readings and history. This is integrated with Stripe using the user's live keys.
+-   **PWA Support**: The app should be installable on mobile/desktop devices.
+-   **Analytics**: Track key user events using PostHog.
+-   **Promo Codes**: Ability to create and use promo codes (e.g., FOUNDERS50 for 50% off the first billing cycle) during Stripe checkout.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A full-stack React/FastAPI application. The UI has been significantly updated with new layouts, copy, and the Montserrat font. A sophisticated backend interpretation engine uses a 78-card structured database () to provide nuanced AI-generated insights. The daily card is now personalized using . Foundations for the premium subscription system (using  for state) and the Clarifier feature have been laid, but both are incomplete and currently broken. The card asset system is in a corrupted state, with many cards and decks not appearing correctly.
+A functional full-stack React/FastAPI web application. All critical bugs from the previous session have been resolved. The application now features two complete 78-card decks (Original and Anime) with all artwork correctly displaying. The core reading and Clarifier features are fully operational. A premium subscription system (FlipWill+) is integrated with Stripe using the user's live API keys, allowing for real payments. The app is also a Progressive Web App (PWA), installable on home screens with custom icons provided by the user. Key user actions are tracked via PostHog integration. User state (premium status, reading counts) is currently managed via .
 
 **Last working item**:
--   **Last item agent was working**: The user reported multiple critical bugs simultaneously: decks disappearing, cards missing from all decks, and the new clarifier feature not showing the drawn card. The agent began debugging the most critical issue: the corrupted card and deck assets.
--   **Status**: IN PROGRESS
+-   **Last item agent was working**: The user requested the implementation of a promo code system for Stripe. The specific requirement is for a FOUNDERS50 code that gives a 50% discount on the first billing cycle only and expires 72 hours after launch.
+-   **Status**: NOT STARTED
 -   **Agent Testing Done**: N
--   **Which testing method agent to use?**: manual testing by curl, screenshot tool
--   **User Testing Done**: Y (User found the bugs)
+-   **Which testing method agent to use?**: backend testing agent to verify Stripe promo code creation and application, and frontend testing agent to test the UI flow.
+-   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1**: Card and Deck System Corruption (P0)
--   **Issue 2**: Clarifier Feature Broken (P0)
--   **Issue 3**: User Confusion and Frustration (Recurring)
+-   **Issue 1: Implement Promo Code System (P0)**: The last request from the user was to create a promo code system. This is the next immediate task.
 
 **Issues Detail:**
--   **Issue 1: Card and Deck System Corruption (P0)**
-    -   **Description**: The user reported that the minor arcana cards for all decks have disappeared, and the deck selector is no longer showing all available decks. This is a critical regression that breaks the core functionality of the app.
-    -   **Attempted fixes**: The agent started listing files in the card directories but did not get to a fix.
+-   **Issue 1: Implement Promo Code System (P0)**
+    -   **Attempted fixes**: None.
     -   **Next debug checklist**:
-        1.  Verify the contents of  and .
-        2.  Re-attempt the download of the complete Anime deck from . Ensure all 79 files (78 cards + back) are downloaded and correctly named.
-        3.  Inspect the deck scanning logic in  that populates the list of available decks. It is likely failing to parse the directories correctly.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical blocker. Fixing it will restore the app's core card drawing and viewing functionality.
-    -   **Status**: IN PROGRESS
+        1.  **Backend**: Use the Stripe API to create a new Coupon (50% off, first invoice only).
+        2.  **Backend**: Use the Coupon to create a Promotion Code (FOUNDERS50) with an expiration date (current time + 72 hours).
+        3.  **Backend**: Modify the  endpoint to accept a promotion code and apply it to the Stripe session using the  parameter.
+        4.  **Frontend**: Add a text input field for the promo code in the  or  page.
+        5.  **Frontend**: Pass the entered promo code to the backend when creating the checkout session.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a direct user request for a marketing tool to attract initial customers.
+    -   **Status**: NOT STARTED
     -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Both.
     -   **Blocked on other issue**: None.
 
--   **Issue 2: Clarifier Feature Broken (P0)**
-    -   **Description**: The user reported that when using the new Reveal the Missing Piece feature, the clarifier card does not appear on the screen after being drawn.
-    -   **Attempted fixes**: None. The issue was reported as the agent was debugging the asset corruption.
-    -   **Next debug checklist**:
-        1.  Review .
-        2.  Check the state management for the drawn clarifier card () and ensure it's being set correctly.
-        3.  Verify the  component within the panel is receiving the correct props to construct and display the card image path.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a major new feature requested by the user. It needs to be functional.
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: N
-    -   **Should Test frontend/backend/both after fix?**: Frontend.
-    -   **Blocked on other issue**: Blocked by **Issue 1**, as no cards can be displayed until the asset system is fixed.
-
--   **Issue 3: User Confusion and Frustration (Recurring)**
-    -   **Description**: The user is repeatedly frustrated with the platform's forking mechanism, believing it costs credits and loses work. This leads to interruptions and mistrust.
-    -   **Attempted fixes**: The agent has tried to explain the process multiple times.
-    -   **Next debug checklist**: This is a communication challenge. The next agent must be exceptionally patient and clear. Proactively reassure the user that their code is safe and forks are free technical necessities. Over-communicate what is being done.
-    -   **Why fix this issue and what will be achieved with the fix?**: Improves user trust and makes the development process smoother.
-    -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: N/A.
-
 **In progress Task List**:
--   **Task 1: Complete Premium Feature Implementation (P1)**
-    -   **Description**: The foundation for the paywall system is in place, but it needs to be fully wired and tested.
-    -   **Where to resume**:
-        1.  Connect all UI elements (, locked  page, reading counter) to the .
-        2.  Thoroughly test the end-to-end flow: hit the 2-reading limit, see the paywall, perform the mock upgrade, and confirm features are unlocked.
-    -   **What will be achieved with this?**: A functional (mocked) premium tier system as per the user's specification.
-    -   **Status**: IN PROGRESS
-    -   **Blocked on something**: Blocked by **Issue 1**.
-
--   **Task 2: Complete Clarifier Feature Implementation (P1)**
-    -   **Description**: The backend and frontend components have been created, but the feature is non-functional and incomplete.
-    -   **Where to resume**:
-        1.  Fix the card not displaying bug (**Issue 2**).
-        2.  Implement the Next Actions buttons that appear after a clarification.
-        3.  Integrate the premium logic (1 free clarifier per reading, then show the paywall).
-    -   **What will be achieved with this?**: A new, immersive UX for getting deeper insights from a reading.
-    -   **Status**: IN PROGRESS
-    -   **Blocked on something**: Blocked by **Issue 1** and **Issue 2**.
+There are no tasks currently in progress. The next task is to begin the promo code implementation.
 
 **Upcoming and Future Tasks**
 **Upcoming Tasks:**
--   **Task 1 (P1)**: Integrate a real payment provider. The user cannot use Stripe and needs an alternative.
--   **Task 2 (P2)**: Implement PWA (Progressive Web App) support.
--   **Task 3 (P2)**: Implement private user accounts with persistent reading history (Supabase/Firebase was discussed).
+-   **Task 1 (P0)**: Implement persistent user accounts (e.g., using Supabase/Firebase). This is a critical next step to move away from  and allow users to save their history and premium status across devices.
+-   **Task 2 (P1)**: Implement Reading History page backed by the new user account system.
+-   **Task 3 (P2)**: Implement premium analytics features (Decision Pattern Tracking, Personal Notes).
 
 **Future Tasks:**
 -   **Task 4 (P2)**: Add French language support (i18n).
 -   **Task 5 (P2)**: Integrate artwork for other decks (Alchemy, Midnight, Ethereal).
--   **Task 6 (P3)**: Implement premium analytics features (Decision Pattern Tracking, etc.).
--   **Task 7 (P3)**: Add a card shuffle animation.
+-   **Task 6 (P3)**: Add a card shuffle animation.
 
 **Completed work in this session**
--   **Full UI & Copy Overhaul**: Redesigned the Home, Draw, and Result pages with new layouts and user-provided text.
--   **Font Change**: Successfully changed the application-wide font to Montserrat for both body and titles.
--   **Interpretation Engine V2**: Created a structured 78-card database () and updated the AI prompt to use it, enabling richer, more consistent interpretations.
--   **New UI Components on Reading Page**: Added lens keyword chips, core dynamic text, and card-specific decision prompts to the reading results.
--   **Personalized Daily Card**: Modified the daily card feature to be unique per user, storing the card in .
--   **Decision Insight Grid**: Redesigned the Decision Insight section into a 2x2 grid (Pattern, Tension, Approach, Try This Now).
--   **Initial Feature Scaffolding**: Created the initial files and backend endpoints for the Premium system and the Clarifier feature.
+-   **Critical Bug Fixes**:
+    -   **Card System Restored**: Fixed the broken card and deck system, ensuring all cards from both Original and Anime decks display correctly.
+    -   **Clarifier Feature Fixed**: Repaired the Reveal the Missing Piece feature, which now correctly draws and displays clarifier cards with their interpretations.
+-   **Anime Deck Integration**: Successfully downloaded and integrated all 78 cards for the Anime deck, overcoming Google Drive API limitations. Both decks are now complete.
+-   **Live Stripe Integration**:
+    -   Integrated FlipWill+ subscriptions with Stripe using the user's **live** API keys.
+    -   Implemented backend endpoints for creating checkout sessions, handling webhooks, and fetching payment plans.
+    -   Connected the frontend UI to initiate real payment flows.
+-   **PWA Implementation**:
+    -   Configured the application as a Progressive Web App, making it installable on user devices.
+    -   Added a manifest, service worker, and a custom, user-facing install banner.
+    -   Integrated user-provided custom app icons for the PWA.
+-   **UI/UX Enhancements**:
+    -   Fixed a z-index bug where the paywall was hidden behind the clarifier panel.
+    -   Updated the clarifier panel to show the correct card back image.
+    -   Adjusted the premium logic to allow two free clarifier draws per reading.
+-   **Analytics Integration**:
+    -   Integrated PostHog for analytics.
+    -   Implemented event tracking for key user actions: , , , , and .
 
 **Earlier issues found/mentioned but not fixed**
-None not already listed in the pending issues.
+None. All prior issues have been addressed or are captured in the upcoming tasks.
 
 **Known issue recurrence from previous fork**
 None.
@@ -124,71 +94,74 @@ None.
 **Key Technical Concepts**
 -   **Frontend**: React, React Router, Tailwind CSS, , .
 -   **Backend**: FastAPI, Pydantic.
--   **Database**: MongoDB (used for a now-obsolete global daily card cache).
 -   **AI Integration**: OpenAI API.
+-   **Payments**: Stripe (for subscriptions).
+-   **PWA**: Service Workers, Web App Manifest.
+-   **Analytics**: PostHog.
 
 **key DB schema**
--   ** collection**: Obsolete. User-specific state is now managed in .
+-   No persistent database is in use. All user-specific state (premium status, reading counts, daily card) is managed in the browser's .
 
 **changes in tech stack**
--   No core changes. Increased reliance on  for client-side state management (premium status, reading counts, daily card).
+-   : Python library for backend payment processing.
+-   : Frontend library for analytics.
 
 **All files of reference**
--   **For Debugging**: , , 
--   **In-Progress Features**: , , 
--   **Newly Created**: 
+-   **For Promo Codes**: , , .
+-   **Stripe Config**:  (contains live keys).
+-   **PWA Config**: , , .
+-   **Analytics Config**: , .
 
 **Areas that need refactoring**:
--   The deck and card scanning logic in  is brittle and has failed. It needs to be rewritten to be more robust against missing files or empty directories.
+-   The dependency on  for all user state is a major liability. It is not persistent, secure, or shareable across devices. The highest priority refactoring is to introduce a proper backend user authentication system (e.g., Supabase, Firebase).
+-    is growing large and contains logic for readings, payments, and card data. It should be split into multiple router files for better organization.
 
 **key api endpoints**
--   : (New) Provides interpretation for the single clarifier card.
--   : (New) Provides a daily card for a specific user session.
+-   : (New) Creates a Stripe checkout session.
+-   : (New) Listens for events from Stripe (e.g., successful payment).
+-   : (New) Fetches the available subscription plans.
+-   : Provides interpretation for a clarifier card.
 -   : The main endpoint for 3-card readings.
 -   : Fetches the list of available decks.
 
 **Critical Info for New Agent**
--   **User is frustrated.** You must be patient and over-communicate, especially regarding the platform's forking process. Reassure the user that their work is safe and that forks are free and necessary.
--   **The application is broken.** The highest priority is fixing the card asset and deck system corruption (**Issue 1**). No other feature can be tested or completed until cards are visible again.
--   **Juggling Priorities**: You will need to fix the critical bugs first, then resume the in-progress implementation of the Premium and Clarifier features.
--   **Asset Download Required**: You must successfully download the complete Anime deck from the user's Google Drive link, as previous attempts were incomplete.
+-   **LIVE STRIPE KEYS ARE IN USE.** Be extremely careful when modifying payment-related code (, ). It is recommended to ask the user for test keys before making significant changes.
+-   The immediate next task is to implement the promo code feature as requested by the user.
+-   The most important architectural improvement needed is a real user authentication system to replace the volatile  implementation for premium status and user history. This should be proposed to the user after the promo code feature is complete.
 
 **documents and test reports created in this job**
-None.
+-   : Test report from the testing agent, which passed after the major bugs were fixed.
+-   A deployment health check was run by the deployment agent and passed, confirming the app is ready for deployment.
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Reports that the other decks have disappeared from the selector. (PENDING)
-2.  **User**: Reports that the clarifier card is not appearing. (PENDING)
-3.  **User**: Expresses frustration about forking, credits, and wasted time. (PENDING)
-4.  **User**: Asks about the card-clarity job name and if they need to move their work. (Answered)
-5.  **User**: Provides the Google Drive link again and reports cards are mixed up and missing for all decks. (PENDING)
-6.  **User**: Requests to rename Next Step to TRY THIS NOW with new static text. (Completed)
-7.  **User**: Points out that titles are still not using the Montserrat font. (Completed)
-8.  **User**: Asks if they should save to GitHub. (Answered)
-9.  **User**: Provides detailed specifications for the Clarifier feature. (In Progress)
-10. **User**: Provides detailed specifications for the Premium/Payment system. (In Progress)
+1.  **User**: Asks for PWA support. (Completed)
+2.  **User**: Asks for a more visible install button. (Completed)
+3.  **User**: Provides custom PWA icons. (Completed)
+4.  **User**: Asks to integrate PostHog with specific event tracking. (Completed)
+5.  **User**: Asks to implement a FOUNDERS50 promo code. (PENDING)
+6.  **User**: Asks if the app is 100% working. (Answered)
+7.  **User**: Reports the card back image is missing in the clarifier. (Completed)
+8.  **User**: Asks how to get customers and if the app is on stores. (Answered)
+9.  **User**: Reports the Continue Exploring buttons in the clarifier don't work. (Completed)
+10. **User**: Asks what is needed to connect Stripe and provides live keys. (Completed)
 
 **Project Health Check:**
--   **Broken**:
-    -   Deck Selection / Card Library
-    -   Card Image Loading (all minor arcana are missing)
-    -   Clarifier Feature
--   **Mocked**:
-    -   The entire premium payment flow. It only toggles a flag in .
+-   **Broken**: None. The application is functional in the preview environment.
+-   **Mocked**: User authentication and persistent data storage. All user-specific data is currently stored in , which is not a permanent solution.
 
 **3rd Party Integrations**
--   **OpenAI GPT**: Used for all interpretations, via the .
--   **Google Drive**: The  library is used to download assets, but this process needs to be re-run correctly for the Anime deck.
+-   **OpenAI GPT**: Used for all interpretations via .
+-   **Stripe**: Integrated for handling FlipWill+ subscriptions using the user's **live** API keys.
+-   **PostHog**: Integrated for product analytics, tracking key user events.
 
 **Testing status**
--   **Testing agent used after significant changes**: NO
+-   **Testing agent used after significant changes**: YES (Passed after bug fixes).
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: Yes, the entire card and deck asset loading system is broken.
+-   **Known regressions**: None.
 
 **Credentials to test flow:**
-N/A. The app has no authentication.
+-   **Stripe**: The user's **LIVE** publishable and secret keys are stored in . Use extreme caution.
 
 **What agent forgot to execute**
--   The agent did not successfully download and integrate the complete Anime card deck.
--   The agent did not perform a basic smoke test after making changes, which would have caught the critical card asset regression before the user had to find it.</analysis>
+The previous agent was about to start the implementation of the promo code feature when the session ended. No tasks were forgotten.</analysis>
