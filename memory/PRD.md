@@ -139,6 +139,28 @@ Each card has:
   - Full clarifier flow working: select focus → draw card → view interpretation → continue exploring
 - **Testing:** All 21 backend API tests passing, frontend UI tests passing
 
+### Session 4 - Payment & Marketing Features
+- **Complete Anime Deck**: All 78 cards for both Original and Anime decks
+- **Live Stripe Integration:**
+  - FlipWill+ subscriptions: Monthly ($4.99) and Yearly ($39.99)
+  - Native Stripe SDK checkout with `allow_promotion_codes=True`
+  - Backend endpoints: `/api/payments/create-checkout`, `/api/payments/status/{session_id}`, `/api/payments/plans`
+- **FOUNDERS50 Promo Code:**
+  - 50% off first billing cycle only
+  - Created in Stripe via `/api/payments/setup-promo-codes` endpoint
+  - Users enter code at Stripe checkout page
+  - Promo code hint added to Upgrade page UI
+- **PWA Support:**
+  - App installable on mobile/desktop
+  - Custom PWA icons provided by user
+  - Service worker and manifest configured
+- **PostHog Analytics:**
+  - Event tracking: reading_started, spread_completed, clarity_clicked, checkout_started, payment_success
+- **Bug Fixes:**
+  - Fixed missing `/api` prefix in payment API calls (PremiumContext.js)
+  - Fixed z-index issue with paywall modal
+  - Fixed clarifier card back image display
+
 ## Upcoming Tasks
 
 ### P0 (High Priority)
