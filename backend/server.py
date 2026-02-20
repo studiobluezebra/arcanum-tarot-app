@@ -543,13 +543,28 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # ============== STRIPE PAYMENT INTEGRATION ==============
+import stripe
 from emergentintegrations.payments.stripe.checkout import StripeCheckout, CheckoutSessionResponse, CheckoutStatusResponse, CheckoutSessionRequest
 from fastapi import Request
 
+# Initialize Stripe with API key
+stripe.api_key = os.environ.get('STRIPE_SECRET_KEY')
+
 # Subscription pricing - Fixed on backend (DO NOT accept from frontend)
 SUBSCRIPTION_PLANS = {
-    "monthly": {"amount": 4.99, "name": "FlipWill+ Monthly", "interval": "month"},
-    "yearly": {"amount": 39.99, "name": "FlipWill+ Yearly", "interval": "year"}
+    "monthly": {"amount": 4.99, "name": "FlipWill+ Monthly", "interval": "month", "price_id": None},
+    "yearly": {"amount": 39.99, "name": "FlipWill+ Yearly", "interval": "year", "price_id": None}
+}
+
+# Promo code configuration
+PROMO_CODE_CONFIG = {
+    "FOUNDERS50": {
+        "percent_off": 50,
+        "duration": "once",  # First billing cycle only
+        "max_redemptions": None,  # Unlimited
+        # Saturday Dec 21, 2025 00:00:00 UTC + 72 hours = Tuesday Dec 24, 2025 00:00:00 UTC
+        "redeem_by_timestamp": 1735005600  # Dec 24, 2025 00:00:00 UTC
+    }
 }
 
 class CreateCheckoutRequest(BaseModel):
