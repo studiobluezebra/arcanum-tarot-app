@@ -4,6 +4,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import TarotCard from '../components/TarotCard';
 import { usePremium } from '../context/PremiumContext';
+import { trackEvent, EVENTS } from '../utils/analytics';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
