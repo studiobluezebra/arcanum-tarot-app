@@ -576,9 +576,104 @@ class CheckoutResponse(BaseModel):
     url: str
     session_id: str
 
+# Helper to get or create a Stripe Price for a plan
+async def get_or_create_price(plan_id: str) -> str:
+    """Get existing price or create a new one for the subscription plan"""
+    plan = SUBSCRIPTION_PLANS[plan_id]
+    
+    # Check if we already have a price in the database
+    existing = await db.stripe_prices.find_one({"plan_id": plan_id}, {"_id": 0})
+    if existing and existing.get("price_id"):
+        return existing["price_id"]
+    
+    # Create a product first
+    product = stripe.Product.create(
+        name=plan["name"],
+        description=f"FlipWill+ {plan_id.capitalize()} Subscription"
+    )
+    
+    # Create recurring price
+    price = stripe.Price.create(
+        product=product.id,
+        unit_amount=int(plan["amount"] * 100),  # Convert to cents
+        currency="usd",
+        recurring={"interval": plan["interval"]}
+    )
+    
+    # Save price ID for future use
+    await db.stripe_prices.update_one(
+        {"plan_id": plan_id},
+        {"$set": {"price_id": price.id, "product_id": product.id}},
+        upsert=True
+    )
+    
+    return price.id
+
+@api_router.post("/payments/setup-promo-codes")
+async def setup_promo_codes():
+    """One-time setup to create FOUNDERS50 promo code in Stripe"""
+    try:
+        promo_config = PROMO_CODE_CONFIG["FOUNDERS50"]
+        
+        # Check if coupon already exists
+        try:
+            existing_coupon = stripe.Coupon.retrieve("FOUNDERS50_COUPON")
+            coupon_id = existing_coupon.id
+            logger.info("Coupon FOUNDERS50_COUPON already exists")
+        except stripe.error.InvalidRequestError:
+            # Create coupon
+            coupon = stripe.Coupon.create(
+                id="FOUNDERS50_COUPON",
+                name="Founders 50% Off First Month",
+                percent_off=promo_config["percent_off"],
+                duration=promo_config["duration"],
+                redeem_by=promo_config["redeem_by_timestamp"]
+            )
+            coupon_id = coupon.id
+            logger.info(f"Created coupon: {coupon_id}")
+        
+        # Check if promo code already exists
+        existing_promos = stripe.PromotionCode.list(code="FOUNDERS50", limit=1)
+        if existing_promos.data:
+            return {
+                "status": "already_exists",
+                "promo_code": "FOUNDERS50",
+                "coupon_id": coupon_id,
+                "message": "Promo code already exists"
+            }
+        
+        # Create promotion code
+        promo_code = stripe.PromotionCode.create(
+            coupon=coupon_id,
+            code="FOUNDERS50",
+            max_redemptions=promo_config["max_redemptions"]
+        )
+        
+        # Store in database for reference
+        await db.promo_codes.insert_one({
+            "code": "FOUNDERS50",
+            "coupon_id": coupon_id,
+            "promo_code_id": promo_code.id,
+            "percent_off": promo_config["percent_off"],
+            "expires_at": datetime.fromtimestamp(promo_config["redeem_by_timestamp"], tz=timezone.utc).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        
+        return {
+            "status": "created",
+            "promo_code": "FOUNDERS50",
+            "coupon_id": coupon_id,
+            "promo_code_id": promo_code.id,
+            "expires_at": datetime.fromtimestamp(promo_config["redeem_by_timestamp"], tz=timezone.utc).isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Error setting up promo codes: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @api_router.post("/payments/create-checkout", response_model=CheckoutResponse)
 async def create_checkout_session(request: CreateCheckoutRequest, http_request: Request):
-    """Create a Stripe checkout session for subscription"""
+    """Create a Stripe checkout session for subscription with promo code support"""
     try:
         # Validate plan
         if request.plan_id not in SUBSCRIPTION_PLANS:
@@ -591,31 +686,32 @@ async def create_checkout_session(request: CreateCheckoutRequest, http_request: 
         if not stripe_api_key:
             raise HTTPException(status_code=500, detail="Stripe not configured")
         
-        # Create webhook URL
-        host_url = str(http_request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
+        # Ensure stripe module has the key
+        stripe.api_key = stripe_api_key
         
-        # Initialize Stripe checkout
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
+        # Get or create price for this plan
+        price_id = await get_or_create_price(request.plan_id)
         
         # Build success and cancel URLs from frontend origin
         success_url = f"{request.origin_url}/upgrade?session_id={{CHECKOUT_SESSION_ID}}&status=success"
         cancel_url = f"{request.origin_url}/upgrade?status=cancelled"
         
-        # Create checkout session with custom amount
-        checkout_request = CheckoutSessionRequest(
-            amount=float(plan["amount"]),
-            currency="usd",
+        # Create checkout session using native Stripe SDK with promo codes enabled
+        session = stripe.checkout.Session.create(
+            mode="subscription",
+            line_items=[{
+                "price": price_id,
+                "quantity": 1
+            }],
             success_url=success_url,
             cancel_url=cancel_url,
+            allow_promotion_codes=True,  # Enable promo code input on checkout page
             metadata={
                 "plan_id": request.plan_id,
                 "plan_name": plan["name"],
                 "user_id": request.user_id or "anonymous"
             }
         )
-        
-        session: CheckoutSessionResponse = await stripe_checkout.create_checkout_session(checkout_request)
         
         # Store transaction in database
         transaction = {
