@@ -90,7 +90,7 @@ export const PremiumProvider = ({ children }) => {
     }
 
     try {
-      const response = await axios.get(`${API}/payments/status/${sessionId}`);
+      const response = await axios.get(`${API}/api/payments/status/${sessionId}`);
       const data = response.data;
 
       if (data.payment_status === 'paid') {
@@ -185,7 +185,7 @@ export const PremiumProvider = ({ children }) => {
       const userId = localStorage.getItem('flipwill_user_id') || `user_${Date.now()}`;
       localStorage.setItem('flipwill_user_id', userId);
 
-      const response = await axios.post(`${API}/payments/create-checkout`, {
+      const response = await axios.post(`${API}/api/payments/create-checkout`, {
         plan_id: plan,
         origin_url: window.location.origin,
         user_id: userId
