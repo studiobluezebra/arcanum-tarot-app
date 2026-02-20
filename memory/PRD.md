@@ -164,19 +164,35 @@ Each card has:
 ## Upcoming Tasks
 
 ### P0 (High Priority)
-- Complete Anime deck (29 remaining cards: Wands 14, Swords 14, Pentacles 1)
-- Complete Premium Feature Implementation (wire up paywall, reading limits)
+- User Authentication System (Supabase/Firebase) - Replace localStorage with persistent accounts
+- Reading History Page backed by user accounts
 
 ### P1 (Medium Priority)
-- Integrate real payment provider (alternative to Stripe)
-- PWA support for mobile installation
-- User accounts with persistent reading history (Supabase/Firebase)
+- Premium analytics features (Decision Pattern Tracking, Personal Notes)
+- Additional deck artwork (Alchemy, Midnight, Ethereal)
 
 ### P2 (Lower Priority)
 - French language support (i18n)
-- Additional deck artwork (Alchemy, Midnight, Ethereal)
 - Card shuffle animation
-- Premium analytics (Decision Pattern Tracking)
+
+## Active Integrations
+- **OpenAI GPT-5.2** via Emergent LLM key for interpretations
+- **Stripe** for FlipWill+ subscriptions (LIVE keys)
+- **PostHog** for product analytics
+- **MongoDB** for daily card caching and payment transactions
+
+## Key API Endpoints
+- `GET /api/daily-card` - Daily card with interpretation
+- `GET /api/personal-daily-card` - Personal daily card (not cached)
+- `GET /api/cards` - All cards for library
+- `GET /api/decks` - Available decks
+- `POST /api/draw` - Draw cards for spread
+- `POST /api/interpret` - Get AI interpretation with card metadata
+- `POST /api/clarifier-interpret` - Get clarifier card interpretation
+- `POST /api/payments/create-checkout` - Create Stripe checkout session
+- `POST /api/payments/setup-promo-codes` - Create FOUNDERS50 promo code
+- `GET /api/payments/status/{session_id}` - Get payment status
+- `GET /api/payments/plans` - Get subscription plans
 
 ## Design Guidelines
 - **Colors:** Dark celestial (#141414 background, #D4AF37 gold accent)
