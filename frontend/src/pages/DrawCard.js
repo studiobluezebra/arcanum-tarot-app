@@ -86,6 +86,12 @@ const DrawCard = () => {
       // Increment reading count for free users
       incrementReadingCount();
 
+      // Track spread_completed event
+      trackEvent(EVENTS.SPREAD_COMPLETED, {
+        cards: drawnCards.map(c => c.name).join(', '),
+        is_premium: isPremium,
+      });
+
       navigate('/reading', { state: { reading } });
     } catch (error) {
       console.error('Error getting interpretation:', error);
