@@ -740,16 +740,22 @@ async def get_payment_status(session_id: str, http_request: Request):
         if not stripe_api_key:
             raise HTTPException(status_code=500, detail="Stripe not configured")
         
-        host_url = str(http_request.base_url).rstrip('/')
-        webhook_url = f"{host_url}/api/webhook/stripe"
+        stripe.api_key = stripe_api_key
         
-        stripe_checkout = StripeCheckout(api_key=stripe_api_key, webhook_url=webhook_url)
-        status: CheckoutStatusResponse = await stripe_checkout.get_checkout_status(session_id)
+        # Retrieve session from Stripe
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        # Determine payment status
+        payment_status = "pending"
+        if session.payment_status == "paid":
+            payment_status = "paid"
+        elif session.status == "expired":
+            payment_status = "expired"
         
         # Update transaction in database
         update_data = {
-            "status": status.status,
-            "payment_status": status.payment_status,
+            "status": session.status,
+            "payment_status": payment_status,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
@@ -763,11 +769,11 @@ async def get_payment_status(session_id: str, http_request: Request):
         
         return {
             "session_id": session_id,
-            "status": status.status,
-            "payment_status": status.payment_status,
-            "amount_total": status.amount_total,
-            "currency": status.currency,
-            "metadata": status.metadata
+            "status": session.status,
+            "payment_status": payment_status,
+            "amount_total": session.amount_total,
+            "currency": session.currency,
+            "metadata": dict(session.metadata) if session.metadata else {}
         }
         
     except Exception as e:
