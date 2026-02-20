@@ -180,9 +180,9 @@ class TestPaymentStatusEndpoint:
         """Verify invalid session_id returns error"""
         response = requests.get(f"{BASE_URL}/api/payments/status/invalid_session_id_12345")
         
-        # Stripe API will return an error for invalid session
-        assert response.status_code in [400, 404, 500]
-        print("✅ Invalid session_id returns error status")
+        # Stripe API will return an error for invalid session (500 becomes 520 via proxy)
+        assert response.status_code in [400, 404, 500, 520], f"Unexpected status: {response.status_code}"
+        print(f"✅ Invalid session_id returns error status: {response.status_code}")
 
 
 class TestCheckoutSuccessFlow:
