@@ -715,7 +715,7 @@ async def create_checkout_session(request: CreateCheckoutRequest, http_request: 
         
         # Store transaction in database
         transaction = {
-            "session_id": session.session_id,
+            "session_id": session.id,
             "plan_id": request.plan_id,
             "amount": plan["amount"],
             "currency": "usd",
@@ -726,7 +726,7 @@ async def create_checkout_session(request: CreateCheckoutRequest, http_request: 
         }
         await db.payment_transactions.insert_one(transaction)
         
-        return CheckoutResponse(url=session.url, session_id=session.session_id)
+        return CheckoutResponse(url=session.url, session_id=session.id)
         
     except Exception as e:
         logger.error(f"Error creating checkout session: {str(e)}")
