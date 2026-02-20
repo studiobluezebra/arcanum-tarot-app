@@ -653,7 +653,7 @@ async def setup_promo_codes():
         
         # Create promotion code
         promo_code = stripe.PromotionCode.create(
-            coupon=coupon_id,
+            promotion={"type": "coupon", "coupon": coupon_id},
             code="FOUNDERS50",
             max_redemptions=promo_config["max_redemptions"]
         )
