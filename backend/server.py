@@ -562,8 +562,9 @@ PROMO_CODE_CONFIG = {
         "percent_off": 50,
         "duration": "once",  # First billing cycle only
         "max_redemptions": None,  # Unlimited
-        # Saturday Dec 21, 2025 00:00:00 UTC + 72 hours = Tuesday Dec 24, 2025 00:00:00 UTC
-        "redeem_by_timestamp": 1735005600  # Dec 24, 2025 00:00:00 UTC
+        # Will be calculated dynamically as 72 hours from the next Saturday
+        "days_until_saturday": 5,  # Default: calculate from current date to next Saturday
+        "expiry_hours_after_launch": 72
     }
 }
 
