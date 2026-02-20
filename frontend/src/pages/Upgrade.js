@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import { motion } from 'framer-motion';
 import { usePremium } from '../context/PremiumContext';
+import { trackEvent, EVENTS } from '../utils/analytics';
 
 const Upgrade = () => {
   const navigate = useNavigate();
@@ -14,6 +15,16 @@ const Upgrade = () => {
   } = usePremium();
 
   const subscriptionInfo = getSubscriptionInfo();
+
+  // Handle upgrade with tracking
+  const handleUpgrade = (plan) => {
+    trackEvent(EVENTS.CHECKOUT_STARTED, {
+      plan: plan,
+      amount: plan === 'yearly' ? 39.99 : 4.99,
+      source: 'upgrade_page',
+    });
+    upgradeToPremium(plan);
+  };
 
   if (isPremium) {
     return (
