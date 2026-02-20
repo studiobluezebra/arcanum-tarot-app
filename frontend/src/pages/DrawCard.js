@@ -38,6 +38,12 @@ const DrawCard = () => {
       return;
     }
 
+    // Track reading_started event
+    trackEvent(EVENTS.READING_STARTED, {
+      question_length: question.length,
+      is_premium: isPremium,
+    });
+
     setIsDrawing(true);
     try {
       const response = await axios.post(`${API}/draw`, {
