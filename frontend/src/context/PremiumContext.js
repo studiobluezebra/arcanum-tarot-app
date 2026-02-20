@@ -97,6 +97,14 @@ export const PremiumProvider = ({ children }) => {
         // Payment successful - activate premium
         const plan = data.metadata?.plan_id || 'monthly';
         activatePremium(plan);
+        
+        // Track payment_success event
+        trackEvent(EVENTS.PAYMENT_SUCCESS, {
+          plan: plan,
+          amount: plan === 'yearly' ? 39.99 : 4.99,
+          currency: 'usd',
+        });
+        
         return;
       } else if (data.status === 'expired') {
         console.log('Payment session expired');
